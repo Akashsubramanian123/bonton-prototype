@@ -1,0 +1,3006 @@
+        :root {
+            --accent-orange: #f39c12;
+            --dark-bg: #0a0a0a;
+            --light-bg: #f8f4f1;
+            --dark-blue-bg: #0d1a2f;
+            --olive-green-bg: #6f7556;
+            --serif-font: 'Lora', serif;
+            --sans-font: 'Roboto', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--sans-font);
+            background-color: var(--dark-bg);
+            color: #ccc;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            width: 85%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        section {
+            padding: 6rem 0;
+        }
+        
+        h1, h2, h3 {
+            font-family: var(--serif-font);
+            color: #fff;
+        }
+
+        /* --- Header Styles --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.52rem 7.5%;
+            background-color: rgba(0, 0, 0, 0.9); /* Darkened for better visibility */
+            border-bottom: 1px solid #333;
+            position: fixed; /* <<<< CHANGED from absolute to fixed */
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        /* ADD THIS NEW BUTTON STYLE */
+        .menu-toggle-btn {
+            display: none; /* Hidden by default on desktop */
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1002; /* Ensure it's above the menu */
+        }
+
+        .header-nav ul { 
+            list-style: none; 
+            display: flex; 
+            margin: 0; 
+            padding: 0; 
+            gap: 2rem; 
+            align-items: center; 
+        }
+        /* ADD THIS NEW BUTTON STYLE */
+        .menu-toggle-btn {
+            display: none; /* Hidden by default on desktop */
+            /* ... existing styles ... */
+        }
+        /* MODIFIED: Use a dedicated class for mobile visibility toggle */
+        @media (max-width: 992px) {
+            .header-nav.mobile-hidden {
+                display: none;
+            }
+            /* NEW: Rule to force display when menu is open */
+            .header-nav.mobile-open {
+                display: block; /* Change from none to block/flex */
+            }
+        }
+        .menu-toggle-btn { display: none; }
+        
+        /* Show on mobile/tablet (<= 992px) */
+        @media (max-width: 992px) {
+            .menu-toggle-btn { display: block; }
+            
+            /* HIDE WHEN SEARCH IS ACTIVE - NEW RULE */
+            .header.search-active .menu-toggle-btn { 
+                display: none; 
+            }
+        }
+        .header-logo{
+            height: 40px;
+            display: flex;
+            align-items: center;
+        }
+        /* ADD THIS NEW RULE */
+        .header-logo img { 
+            height: 50px; /* Adjust height as needed */
+            width: auto;
+            display: block;
+            cursor: pointer; /* Makes it feel like a clickable logo */
+            /* position: absolute; */
+        }
+        .header-nav ul { list-style: none; display: flex; margin: 0; padding: 0; gap: 2rem; align-items: center; }
+        .header-nav a { text-decoration: none; color: #ccc; font-weight: bold; font-size: 1rem; transition: color 0.3s ease; cursor: pointer; }
+        .header-nav a:hover { color: #fff; }
+        .header-nav a.active { color: var(--accent-orange); }
+
+        /* =================== NEW DROPDOWN STYLES =================== */
+        .header-nav .dropdown-container {
+            position: relative;
+            /* padding-bottom: 0.5rem; This adds the invisible bridge */
+        }
+        .header-nav .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: rgba(10, 10, 10, 0.95);
+            list-style: none;
+            padding: 0.5rem 0;
+            /* margin-top: 0.5rem; Add some space from the top nav item */
+            border: 1px solid #333;
+            border-radius: 4px;
+            min-width: 240px;
+            z-index: 1001;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .header-nav .dropdown-container:hover .dropdown-menu {
+            display: block;
+        }
+        .header-nav .dropdown-menu li a {
+            padding: 0.8rem 1.2rem;
+            display: block;
+            white-space: nowrap;
+            font-size: 0.95rem;
+            font-weight: normal;
+            color: #ccc;
+        }
+        .header-nav .dropdown-menu li a:hover {
+            background-color: var(--accent-orange);
+            color: #000;
+            border: #ccc 1px solid;
+        }
+        .header-nav .dropdown-menu li a.dropdown-active {
+            color: #fff; /* Brighter white than the default #ccc */
+            background-color: var(--accent-orange);
+            border: #fff 1.5px solid;
+        }
+        /* =================== NEW HEADER SEARCH DROPDOWN STYLES =================== */
+        .header-search-form {
+            position: relative; /* Anchor for the absolute dropdown */
+            /* ... existing styles ... */
+            margin-left: 0; /* Remove auto margin to center search when no nav is present on mobile */
+        }
+
+        .search-dropdown {
+            position: absolute;
+            top: 100%; /* Position right below the search bar */
+            left: 0;
+            right: 0; /* Make it the same width as the search bar */
+            background-color: #1a1a1a; /* Slightly lighter than the search bar */
+            border: 1px solid var(--accent-orange);
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1001; /* Must be above the rest of the page content */
+        }
+        
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            color: #ccc;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background-color: #2a2a2a;
+            color: #fff;
+        }
+
+        .dropdown-item-title {
+            font-weight: bold;
+            font-size: 1rem;
+            color: var(--accent-orange);
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+
+        .dropdown-item-type {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .no-results-dropdown {
+            padding: 0.75rem 1rem;
+            color: #888;
+            font-style: italic;
+        }
+
+        /* =================== NEW CSS FOR PAGE CONTENT =================== */
+       .page-content {
+            padding-top: 5.3rem; /* Pushes content down to avoid being covered by fixed header */
+        }
+
+        /* =================== NEW HERO ANIMATIONS =================== */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInFromRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%); /* Start completely off-screen to the right */
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0); /* Settle at its final position */
+            }
+        }
+        
+        /* --- Hero Section --- */
+        #hero {
+            height: 100vh;
+            background-image: url(image/coding.jpg); /* REPLACE THIS IMAGE */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding: 0; 
+            overflow: hidden; /* IMPORTANT: This hides the image as it slides in */
+        }
+        .hero-overlay{
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to right, rgba(10,10,10,0.75) 0%, rgba(10,10,10,0.55) 50%, rgba(10,10,10,0.25) 100%);
+            z-index: 0;
+        }
+        
+        /* ... (The #hero::before and .hero-content rules remain unchanged) ... */
+
+        .hero-content h1 {
+            font-family: "poppins", sans-serif;
+            font-weight: 600;
+            font-style: bold;
+            font-size: 5rem;
+            color: #fff;
+            line-height: 1.2;
+            max-width: 600px;
+            
+            /* --- ANIMATION ADDED --- */
+            animation: fadeIn 1s ease-out 0.2s forwards; /* 1s duration, 0.2s delay */
+            opacity: 0; /* Start hidden for the animation */
+        }
+        
+        .hero-foreground-img {
+            position: absolute;
+            bottom: 0;
+            right: -6%;
+            height: 110%;
+            width: 100%;
+            object-fit: cover; 
+            object-position: top; 
+            
+            /* --- ANIMATION ADDED --- */
+            animation: slideInFromRight 1.2s ease-out 0.4s forwards; /* 1.2s duration, 0.4s delay */
+            opacity: 0; /* Start hidden for the animation */
+        }
+
+        /* =================== NEW HEADER SEARCH STYLES (Wrapper & Dropdown) =================== */
+        .header-search-wrapper {
+            position: relative;
+            margin-left: auto; /* Pushes search to the right */
+        }
+        
+        .header-search-form {
+            display: flex;
+            align-items: center;
+            background-color: #111;
+            border-radius: 5px;
+            padding: 0.2rem 0.5rem;
+            /* margin-left: auto; <<< REMOVED. Moved to wrapper */
+        }
+        .header-search-input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1rem;
+            padding: 0.5rem;
+            outline: none;
+            width: 250px; /* Adjust as needed */
+        }
+        .header-search-submit, .header-search-close {
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0.5rem;
+        }
+        .header-search-submit:hover, .header-search-close:hover {
+            color: var(--accent-orange);
+        }
+
+        /* NEW: Suggestions Dropdown */
+        .search-suggestions-dropdown {
+            position: absolute;
+            top: 100%; /* Position right below the search bar */
+            left: 0;
+            right: 0;
+            background-color: #1a1a1a; /* Slightly lighter than the search bar bg */
+            border: 1px solid #333;
+            border-top: none; /* No top border, looks connected */
+            border-radius: 0 0 5px 5px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            z-index: 1002; /* Above other header content */
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+        
+        .suggestion-item {
+            padding: 0.8rem 1rem;
+            color: #ccc;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+            transition: background-color 0.2s ease;
+        }
+        
+        .suggestion-item:hover {
+            background-color: var(--accent-orange);
+            color: #000;
+        }
+
+        .suggestion-item-type {
+            font-size: 0.8rem;
+            color: #888;
+            font-style: italic;
+        }
+        
+        .suggestion-item:hover .suggestion-item-type {
+            color: #333;
+        }
+
+        /* =================== NEW SEARCH RESULTS PAGE STYLES =================== */
+        .search-results-wrapper {
+            background: linear-gradient(to bottom, #9b6207, #0a0a0a);
+            padding: 6rem 0;
+            min-height: calc(100vh - 85px); /* 85px is approx header height */
+        }
+        .search-results-wrapper .container {
+             max-width: 900px;
+        }
+        .search-results-wrapper h1 {
+            font-size: 2.8rem;
+            text-align: center;
+            color: #fff;
+            margin-bottom: 3rem;
+        }
+        .search-results-wrapper h1 span {
+            color: var(--accent-orange);
+        }
+        .search-results-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+        .search-result-item {
+            background-color: #111;
+            border: 1px solid #333;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .search-result-item:hover {
+            background-color: #1a1a1a;
+            border-color: var(--accent-orange);
+        }
+        .search-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .search-item-header h3 {
+            font-size: 1.5rem;
+            color: var(--accent-orange);
+            margin: 0;
+        }
+        .search-item-type {
+            font-size: 0.9rem;
+            color: #888;
+            font-family: var(--sans-font);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .search-result-item p {
+            color: #ccc;
+            line-height: 1.6;
+            margin: 0;
+        }
+        .search-no-results {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #888;
+        }
+
+        /* =================== CSS FOR ABOUT PAGE (MODIFIED) =================== */
+        .about-page-wrapper {
+            min-height: calc(100vh - 85px); 
+            width: 100%;
+            background-image: url('image/about-section.png');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Align content to the left */
+            position: relative;
+            box-sizing: border-box;
+            padding: 3rem 7.5%; /* Give it some horizontal padding */
+        }
+        .about-page-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); /* Darkened overlay */
+        }
+        /* NEW: Centered Title Style */
+        .about-page-main-title {
+            font-family: Poppins, sans-serif;
+            font-weight: 700;
+            position: absolute;
+            top: 3%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #fff;
+            z-index: 3;
+        }
+        .about-page-container {
+            position: relative;
+            z-index: 2;
+            color: white; /* Light text color */
+            width: 80%; /* Take up left half of the space */
+            max-width: 1000px;
+            margin-top: 5rem;
+        }
+        .about-page-container h2 {  /* This style is no longer used but kept for potential future use */
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            font-size: 2.8rem;
+            color: #fff;
+            text-align: left; /* Align title to the left */
+            margin-bottom: 1.5rem;
+        }
+        .about-page-container p, .about-page-container li {
+            font-family: Georgia, serif;
+            color: white; /* Light text color for paragraphs and list items */
+            font-size: 1.3rem;
+            line-height: 1.6;
+        }
+        .about-page-tabs {
+            display: flex;
+            gap: 2rem;
+            margin: 1.5rem 0;
+            border-bottom: 1px solid #555; /* Darker border for light text */
+        }
+        .about-page-tabs h4 {
+            color: #aaa; /* Lighter grey for inactive tabs */
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            padding-bottom: 0.5rem;
+            margin: 0;
+        }
+        .about-page-tabs h4.active {
+            color: var(--accent-orange);
+            border-bottom: 2px solid var(--accent-orange);
+        }
+        .about-page-points {
+            list-style: circle;
+            padding: 0;
+            margin-top: 1.5rem;
+        }
+        .about-page-points li {
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        /* =================== NEW SOLUTIONS PAGE STYLES =================== */
+        .solutions-page-wrapper {
+            min-height: calc(100vh - 85px);
+            background-color: #000;
+            background-image: url('image/solution-bg.jpg'); /* Optional: Add a subtle background */
+            background-size: cover;
+            background-position: center;
+            padding: 4rem 7.5%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .solutions-content {
+            background-color: rgba(10, 10, 10, 0.8);
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 3rem;
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        .solutions-content h1 {
+            font-size: 3.5rem;
+            color: var(--accent-orange);
+            margin-bottom: 1.5rem;
+        }
+        .solutions-content p {
+            font-size: 1.2rem;
+            line-height: 1.7;
+            color: #ccc;
+            text-align: left;
+        }
+
+        /* =================== NEW SMART CARD PAGE STYLES =================== */
+        .smart-card-page-container {
+            background-image: url('image/smart.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            padding: 6rem 7.5%;
+            min-height: calc(100vh - 85px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .smart-card-page-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(10, 10, 10, 0.65);
+            z-index: 1;
+        }
+        /* This is now just for the title */
+        .main-title {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            text-align: center;
+            font-family: Poppins, sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        .smart-card-content-wrapper {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            width: 100%;
+            text-align: left;
+        }
+        .smart-card-heading {
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            font-size: 1.8rem;
+            line-height: 1.4;
+            color: #fff;
+            margin-bottom: 1.5rem;
+        }
+        .smart-card-details h2 {
+            font-family: "Inter", sans-serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+        .smart-card-details ul {
+            list-style: none;
+            padding: 0;
+            max-width: 800px;
+        }
+        .smart-card-details li {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-weight: 400;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+            position: relative;
+            color: white;
+        }
+        .smart-card-details li::before {
+            content: '✓';
+            color: var(--accent-orange);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        /* =================== FINAL ANIMATION STYLES =================== */
+        .animated-cards-container {
+            position: relative;
+            width: 300px;
+            height: 200px;
+        }
+        .animated-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            box-sizing: border-box;
+            opacity: 0;
+            animation-name: slide-in-and-out;
+            animation-duration: 9s;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+        }
+        .animated-card.card-1 {
+            animation-delay: 0s;
+        }
+        .animated-card.card-2 {
+            animation-delay: 3s;
+        }
+        .animated-card.card-3 {
+            animation-delay: 6s;
+            background-color: transparent; 
+        }
+        @keyframes slide-in-and-out {
+            0% {
+                transform: translateX(100%); /* Start from right, invisible */
+                opacity: 0;
+            }
+            5% { /* Slide in and become visible */
+                transform: translateX(0);
+                opacity: 1;
+            }
+            33% { /* Stay visible */
+                transform: translateX(0);
+                opacity: 1;
+            }
+            38% { /* Disappear */
+                transform: translateX(0);
+                opacity: 0;
+            }
+            100% { /* Remain invisible */
+                opacity: 0;
+            }
+        }
+
+        /* =================== NEW VR/AR PAGE STYLES =================== */
+        .vr-ar-page-container {
+            background-image: url('image/vr-ar.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            padding: 4rem 7.5%;
+            min-height: calc(100vh - 85px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .vr-ar-page-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(10, 10, 10, 0.65);
+            z-index: 1;
+        }
+        .vr-ar-main-title {
+            font-family: Poppins, sans-serif;
+            font-weight: 700;
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            text-align: center;
+            font-size: 3.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .vr-ar-content-wrapper {
+            position: relative;
+            z-index: 2;
+            max-width: 1100px; /* Constrain width for readability */
+            width: 100%;
+            text-align: left;
+        }
+        .vr-ar-content-wrapper h2 {
+            font-family: "Inter", sans-serif;
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+        .vr-ar-content-wrapper h3 {
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            font-size: 1.7rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+        .vr-ar-content-wrapper p {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-weight: 400;
+            font-size: 1.21rem;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+        /* =================== NEW ENTERPRISE SOLUTIONS PAGE STYLES =================== */
+        .enterprise-page-container {
+            background-image: url('image/enterprise.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            padding: 4rem 7.5%;
+            min-height: calc(100vh - 85px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .enterprise-page-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(10, 10, 10, 0.65);
+            z-index: 1;
+        }
+        .enterprise-main-title {
+            font-family: Poppins, sans-serif;
+            font-weight: 700;
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            text-align: center;
+            font-size: 3.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .enterprise-content-wrapper {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            width: 100%;
+        }
+        .enterprise-content-wrapper h2 {
+            font-family: "Inter", sans-serif;
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+        }
+        .enterprise-images {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            align-items: stretch;
+        }
+        .enterprise-images > img { /* Direct child image */
+            max-width: 300px;
+            height: auto;
+        }
+        .enterprise-image-box {
+            display: grid; /* MODIFIED: Use Grid for flexible layout */
+            grid-template-columns: repeat(2, 1fr);
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            max-width: 300px;
+        }
+        .enterprise-image-box .img-top {
+            width: 100%;
+            grid-column: 1 / -1; /* MODIFIED: Make top image span both columns */
+        }
+        .enterprise-image-box .img-bottom {
+            width: 100%; /* MODIFIED: Fill the grid cell */
+            height: 100%; /* MODIFIED: Fill the grid cell's height */
+            object-fit: cover; /* MODIFIED: Prevent image distortion */
+        }
+        .enterprise-text-content h3 {
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            font-size: 1.7rem;
+            margin-top: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .enterprise-text-content p {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-weight: 400;
+            font-size: 1.21rem;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        /* =================== NEW MARKETING SOLUTIONS PAGE STYLES =================== */
+        .marketing-page-container {
+            background-image: url('image/marketing.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            padding: 4rem 7.5%;
+            min-height: calc(100vh - 85px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .marketing-page-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(10, 10, 10, 0.65);
+            z-index: 1;
+        }
+        .marketing-main-title {
+            font-family: Poppins, sans-serif;
+            font-weight: 700;
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            text-align: center;
+            font-size: 3.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .marketing-content-wrapper {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            width: 100%;
+        }
+        .marketing-content-wrapper h2 {
+            font-family: "Inter", sans-serif;
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+        }
+        .marketing-text-content h3 {
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            font-size: 1.7rem;
+            margin-top: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .marketing-text-content p {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-weight: 400;
+            font-size: 1.21rem;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        /* =================== NEW WEB/MOBILE APP PAGE STYLES =================== */
+        .web-mobile-app-container {
+            background-image: url('image/web-app.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            padding: 4rem 7.5%;
+            min-height: calc(100vh - 85px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .web-mobile-app-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(10, 10, 10, 0.65);
+            z-index: 1;
+        }
+        .web-mobile-app-main-title {
+            font-family: Poppins, sans-serif;
+            font-weight: 700;
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            text-align: center;
+            font-size: 3.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .web-mobile-app-content-wrapper {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            width: 100%;
+        }
+        .web-mobile-app-content-wrapper h2 {
+            font-family: "Inter", sans-serif;
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+        }
+        .web-mobile-images {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .web-mobile-images img {
+            max-width: 350px;
+            height: auto;
+        }
+        .web-mobile-app-text-content h3 {
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            font-size: 1.7rem;
+            margin-top: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .web-mobile-app-text-content p {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-weight: 400;
+            font-size: 1.21rem;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        /* =================== NEW PROJECT PAGE STYLES =================== */
+        .project-hero {
+            height: 60vh;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .project-hero-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        .project-hero h1 {
+            font-size: 4rem;
+            color: #fff;
+            max-width: 900px;
+        }
+        .project-content-wrapper {
+            background-color: #0a0a0a;
+            padding: 5rem 7.5%;
+        }
+        .project-content-wrapper p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: left;
+            color: #ccc;
+        }
+
+       /* =================== NEW OVERVIEW PAGE STYLES (Overlay Effect) =================== */
+        .overview-page-wrapper {
+            background-image: url(image/projects.png);
+            background-position: center;
+            background-size: cover;
+            background-color: #000;
+            padding: 6rem 7.5%;
+        }
+        .overview-page-wrapper h1 {
+            font-family: Poppins, sans-serif;
+            font-weight: 700;
+            font-size: 3.5rem;
+            text-align: center;
+            color: #fff;
+            margin-bottom: 4rem;
+        }
+        .overview-page-wrapper h1 span {
+            color: var(--accent-orange);
+        }
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+        
+        /* 1. Set position relative for the card */
+        .overview-card {
+            background-color: #111;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative; /* This is the anchor for the absolute content */
+        }
+        
+        .overview-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .overview-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block; /* Fixes potential small gap */
+        }
+        
+        /* 2. Style the content overlay */
+        .overview-card-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%; /* Cover the entire card */
+            
+            /* 3. Center the text content */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            
+            padding: 1.5rem;
+            box-sizing: border-box; /* Include padding in height/width */
+            
+            /* 4. Default state: transparent and hidden */
+            background-color: rgba(0, 0, 0, 0); /* Transparent background */
+            opacity: 0; /* Fully hidden */
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+        }
+        
+        /* 5. Hover state: show content with dark background */
+        .overview-card:hover .overview-card-content {
+            background-color: rgba(0, 0, 0, 0.7); /* Transparent black (70% opacity) */
+            opacity: 1; /* Fade in */
+        }
+        
+        /* 6. Style the text inside the overlay */
+        .overview-card-content h3 {
+            font-family: "Inter", sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+        
+        .overview-card-content p {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-weight: 400;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #ccc; 
+            margin-bottom: 1.5rem;
+        }
+        
+        .overview-card-link {
+            display: inline-block;
+            text-decoration: none;
+            color: var(--accent-orange);
+            font-family: Poppins, sans-serif;
+            font-weight: 700;   
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+        .overview-card-link:hover {
+            color: #fff;
+        }
+
+        /* =================== NEW SOLUTIONS OVERVIEW PAGE STYLES (REPLACED) =================== */
+        .solutions-overview-page {
+            background-image: url('image/solution-bg.png');
+            background-size: contain;
+            background-position: top;
+            background-repeat: no-repeat;
+            background-color:#777;
+            position: relative;
+            padding: 5rem 0;
+            min-height: calc(210vh - 85px);
+        }
+        .solutions-overview-page::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            /* background-color: rgba(13, 26, 47, 0.3); */
+            z-index: 1;
+        }
+        .solutions-overview-page .container {
+            position: relative;
+            z-index: 2;
+            width: 90%;
+            max-width: 1400px;
+        }
+        .solutions-overview-title {
+            color: white;
+            font-size: 3.5rem;
+            padding-left: 1rem;
+            margin-bottom: 5rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            text-align: center;
+        }
+        .solutions-overview-section {
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+            margin-bottom: 6rem;
+            padding: 0 1rem;
+        }
+        .solutions-overview-section.top-section .solutions-overview-text {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+            max-width: 900px;
+            margin: 0; /* Center the top text block */
+        }
+        .solutions-overview-section.reverse {
+            flex-direction: row-reverse;
+        }
+        .solutions-overview-image {
+            flex: 1;
+            max-width: 450px;
+        }
+        .solutions-overview-image img {
+            width: 100%;
+        }
+        .solutions-overview-text {
+            flex: 1.5;
+        }
+        .solutions-overview-text h2 {
+            font-family: "Poppins", sans-serif;
+            font-weight: 500;
+            font-size: 2.3rem;
+            color: white;
+            margin-bottom: 3rem;
+        }
+        .solutions-overview-section.top-section h2{
+            font-size: 2.5rem;
+        }
+        .solutions-overview-text p {
+            font-family: "Poppins", sans-serif;
+            font-weight: 300;
+            font-size: 1.3rem;
+            line-height: 1.7;
+            color: white;
+        }
+        @media (max-width: 992px) {
+            .solutions-overview-section, .solutions-overview-section.reverse {
+                flex-direction: column;
+                text-align: center;
+            }
+             .solutions-overview-section.top-section {
+                text-align: left; /* Keep top section text aligned left */
+            }
+        }
+
+        /* =================== NEW PRODUCTS PAGE STYLES =================== */
+        .products-page-container {
+            /* NOTE: You must provide a 'products-bg.jpg' image */
+            background-image: url('image/products-bg.png');
+            background-size: cover;
+            background-position: center;
+            /* background-attachment: fixed; */
+            position: relative;
+            padding: 5rem 7.5%;
+            min-height: calc(100vh - 85px);
+        }
+        .products-page-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(10, 10, 10, 0.3); /* Dark overlay */
+            z-index: 1;
+        }
+        .products-page-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px; /* Constrain width for readability */
+        }
+        .product-item {
+            margin-bottom: 2.5rem;
+        }
+        .product-item h2 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 0.75rem;
+        }
+        .product-item p {
+            font-family: 'Georgia', serif;
+            font-weight: 400;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #ccc;
+            max-width: 800px; /* Limit line length */
+        }
+        /* =================== NEW STYLES FOR PRODUCT ANIMATION =================== */
+        .product-animation-container {
+            position: relative;
+            width: 450px; /* Adjust width as needed */
+            height: 300px; /* Adjust height as needed */
+            margin-top: 2rem;
+            margin-bottom: 2.5rem; /* Match margin of product-item */
+        }
+        .animated-card-product {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            opacity: 0;
+            animation-name: slide-in-and-out;
+            animation-duration: 9s;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+        }
+        .animated-card-product img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .animated-card-product .card-text {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            text-align: center;
+            padding: 0.75rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 1.2rem;
+        }
+         .animated-card-product.card-1 {
+            animation-delay: 0s;
+        }
+        .animated-card-product.card-2 {
+            animation-delay: 3s;
+        }
+        .animated-card-product.card-3 {
+            animation-delay: 6s;
+        }
+        @media (max-width: 992px) {
+            .solutions-overview-section, .solutions-overview-section.reverse {
+                flex-direction: column;
+                text-align: center;
+            }
+             .solutions-overview-section.top-section {
+                text-align: left; /* Keep top section text aligned left */
+            }
+        }
+
+        /* --- New Values Section Styling --- */
+        #values {
+            background-color: rgb(255, 239, 212);
+            padding: 6rem 0;
+        }
+        #values .container {
+            width: 100%;
+            max-width: 100%;
+            padding-left: 2.5rem;
+            padding-right: 2.5rem;
+        }
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+            align-items: stretch; 
+        }
+        .value-card-layered {
+            text-align: center;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            /* --- NEW: Added transition for smooth hover animation --- */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        /* --- NEW: Hover effect for the value cards --- */
+        .value-card-layered:hover {
+            transform: translateY(-10px); /* Moves the card 10px up */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15); /* Optional: bigger shadow for "lift" */
+        }
+        .value-card-layered img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        }
+        .value-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .value-content h3 {
+            color: black;
+            font-size: 1.8rem;
+            font-family: poppins, sans-serif;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .value-content p {
+            font-family: Inter, sans-serif;
+            font-weight: 400;
+            color: black;
+            font-size: 1rem;
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+
+        /* --- Other Section Styles (Transformation, Solutions, etc.) --- */
+        /* ... (No changes were made to the styles of the other sections) ... */
+        #transformation { background-color: #000; }
+        .transformation-content { display: flex; align-items: center; gap: 4rem; }
+        .transformation-image { flex: 1; }
+        .transformation-image img { max-width: 100%; }
+        .transformation-text { flex: 1.2; }
+        .transformation-text h2 { font-family:"Poppins", sans-serif; font-weight: 600; font-size: 2.8rem; line-height: 1.3; }
+        .transformation-text p { font-family: "inter", sans-serif; font-weight: 500; color: white; font-size: 1.1rem; margin-bottom: 2rem; }
+        .transformation-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .t-button { 
+            font-family: Georgia, serif; 
+            padding: 1.5rem; 
+            border-radius: 8px; 
+            text-align: center;
+            font-weight: 500;
+            background-color: white;
+            color: black;
+        }
+
+        /* --- NEW HOVER EFFECT --- */
+        .t-button:hover {
+            transform: translateY(-5px); /* Lifts the button slightly */
+            box-shadow: 0 5px 20px rgba(250, 155, 3, 0.682); /* Adds a soft blue glow */
+            background: linear-gradient(to right, #F97316, #f39c12); 
+            color: #fff; /* White text as requested */
+            transition: all 0.5s ease-in-out, transform 0.5s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        #solutions { background: var(--dark-blue-bg); }
+        #solutions h2 { font-family:"Poppins", sans-serif; font-weight: 500; text-align: center; font-size: 2.8rem; margin-bottom: 3rem; }
+        #solutions h2 span { color: var(--accent-orange); }
+        .solutions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+        .solution-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 15px; padding: 0; overflow: hidden;}
+        .solution-image-container { position: relative; height: 100%;}
+        /* --- NEW: Image overlay for solution cards --- */
+        .solution-image-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* This is the default gradient */
+            background: linear-gradient(
+                to bottom, 
+                rgba(0, 0, 0, 0.5) 0%,  /* 80% black at the very top */
+                transparent 30%,      /* Fades to transparent by 30% down */
+                transparent 70%,      /* Stays transparent until 70% down */
+                rgba(0, 0, 0, 0.5) 100% /* Fades back to 80% black at the bottom */
+            );
+            z-index: 1; /* Sits on top of the image, behind text */
+            transition: all 0.5s ease-in-out; /* Smooth animation */
+            pointer-events: none; /* Lets clicks pass through */
+        }
+
+        /* --- NEW: Darker overlay on hover --- */
+        .solution-card:hover .solution-image-container::before {
+            /* This gradient is "darker" as it's 100% black and covers more area */
+            background: linear-gradient(
+                to bottom, 
+                rgba(0, 0, 0, 0.8) 0%,    /* 100% black at the top */
+                transparent 40%,      /* Fades out a bit slower */
+                transparent 60%,      /* Fades in a bit sooner */
+                rgba(0, 0, 0, 0.8) 100% /* 100% black at the bottom */
+            );
+        }
+        .solution-image-container img { width: 100%; height: 350px; object-fit: cover; display: block; }
+        .solution-card h3 { font-family:"Poppins", sans-serif; font-weight: 500; position: absolute; top: 0; left: 0; width: 100%; font-size: 1.2rem; color: #fff; background: linear-gradient(to bottom, rgba(0, 0, 0, 1), transparent); padding: 1rem 0 1.5rem; margin: 0; text-align: center; z-index: 2; /* Sits on top of the new overlay */ }
+        .solution-card p { font-family:"inter", sans-serif; font-weight: 300; position: absolute; bottom: 0; left: 0; width: 100%; color: white; font-size: 1rem; line-height: 1.5; background: linear-gradient(to top, rgba(0, 0, 0, 1), transparent); padding: 2rem 1rem 1rem; margin: 0; box-sizing: border-box; z-index: 2; /* Sits on top of the new overlay */ }
+
+        #stats { 
+            background-image: url(image/stats.png); 
+            background-size: cover; 
+            background-position: center; 
+            position: relative; 
+            padding: 6rem 0;
+        }
+        #stats h2 {
+            position: absolute;
+            left: 0%;
+            top: 0%;
+            background-color: rgba(45, 122, 132, 0.9); 
+            color: #fff;
+            font-family: "Inria Serif", serif;
+            font-weight: 400;
+            font-style: normal;
+            font-size: 1.7rem;
+            line-height: 1.4; /* Improved readability for multi-line text */
+            padding: 1.5rem 2.5rem; /* Padding inside the box */
+            max-width: 450px; /* Constrain width if needed, adjust as desired */
+            z-index: 3;
+            clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%); /* Slightly adjusted angle */
+        }
+        .stats-content { 
+            position: relative; 
+            z-index: 2; 
+            padding-top: 5rem;
+        }
+
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 2rem; 
+            text-align: center;
+        }
+
+        /* MODIFIED: Stat items now have a solid white background */
+        .stat-item { 
+            background: #F7F4F4B2; /* Changed from semi-transparent to solid white */
+            color: #000; 
+            padding: 2rem; 
+            border-radius: 0;
+        }
+        .stat-item:hover{
+            background-color: white;
+            transform: translateY(-5px);
+            transition: all 0.5s ease;
+        }
+        .stat-item img { 
+            width: 40%;
+            color: #000;
+            margin-bottom: 0.1rem; 
+        }
+        .stat-item h3 { 
+            font-family: "Inria Serif", serif;
+            font-weight: 700;
+            font-style: normal; 
+            color: #000; 
+            margin: 0.5rem 0; 
+        }
+        .stat-item p { 
+            color: #000; 
+            font-family: "Inria Serif", serif;
+            font-weight: 400;
+            font-style: normal; 
+            font-size: 120%;
+            margin: 0; 
+        }
+        #about { background-color: var(--light-bg); }
+        .about-content { display: flex; align-items: center; gap: 4rem; }
+        .about-text { flex: 1; color: #333; }
+        .about-text h2 { font-family: "Georgia, serif "; font-weight: 700; font-size: 2.8rem; color: #000; }
+        .about-text p, .about-text li { font-family: "Georgia, serif "; font-weight: 400; color: #555; }
+        .about-tabs { display: flex; gap: 2rem; margin: 1.5rem 0; border-bottom: 1px solid #ddd; }
+        .about-tabs h4 { font-family: "Georgia, serif "; font-weight: 700; color: #777; cursor: pointer; padding-bottom: 0.5rem; }
+        .about-tabs h4.active { font-family: "Georgia, serif "; font-weight: 700; color: var(--accent-orange); border-bottom: 2px solid var(--accent-orange); }
+        .about-points { list-style: none; padding: 0; margin-top: 1.5rem; }
+        .about-points li { font-family: Georgia, serif; margin-bottom: 1rem; font-weight: 700; font-size: 1.1rem; }
+        .about-image { flex: 1; }
+        .about-image img { width: 100%; }
+        #certifications p { color: #fff; max-width: 800px; margin: 0 auto 3rem auto; font-size: 1.1rem; }
+        /* =================== CERTIFICATION STYLES (NO ANIMATION) =================== */
+        .cert-image {
+            height: 400px;
+            background-image: url(image/certificate.png); /* Make sure this path is correct */
+            background-size: cover;
+            background-position: center;
+        }
+
+        .cert-badge-img {
+            height: 150px;
+            /* Added for hover animation */
+            transition: transform 0.3s ease;
+        }
+
+        /* Added for hover animation */
+        .cert-badge-img:hover {
+            transform: scale(1.1); /* Makes the image 10% larger */
+        }
+
+        #join-us {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Creates the 50/50 split */
+            background-color: var(--olive-green-bg);
+            padding: 0; /* Remove default section padding for full-width look */
+            color: #f0f0f0; /* A soft off-white for the text */
+        }
+
+        .join-us-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures the image covers the area without distortion */
+            display: block;
+        }
+
+        .join-us-text-container {
+            position: relative; /* This is the anchor for the comma graphic */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem;
+            overflow: hidden; /* Prevents the large comma from spilling out */
+        }
+
+        /* This is the new comma graphic, replacing your old ::before rule */
+        .join-us-text-container::before {
+            content: '';
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 350px;  /* Increased from 280px */
+            height: 350px; /* Increased from 280px */
+            z-index: 0;
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-image: url(image/comma.png);
+        }
+        .join-us-text {
+            position: relative; /* Puts the text on top of the comma */
+            z-index: 1;
+        }
+
+        .join-us-text h2 {
+            font-family: "Inria Serif", serif;
+            font-weight: 700;
+            font-size: 2.8rem;
+            color: #fff;
+            margin-bottom: 1.5rem;
+        }
+
+        .join-us-text p {
+            font-family: "Inria Serif", serif;
+            font-weight: 400;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .join-us-link {
+            font-family: "Content", system-ui;
+            font-weight: 700;
+            color: #fff;
+            font-size: 1.6rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+        #articles {
+            background-color: #000;
+        }
+
+        #articles h2 {
+            font-family: Georgia, serif;
+            font-weight: 700;
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 4rem; /* More space below the heading */
+            color: #fff;
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem; /* A little more space between cards */
+        }
+
+        /* The card is now just an invisible container */
+        .article-card {
+            background: none; /* No more background color! */
+            border-radius: 0;
+        }
+
+        .article-card img {
+            width: 100%;
+            height: 220px; /* A bit more height for the image */
+            object-fit: cover;
+            border-radius: 15px; /* The beautiful rounded corners! */
+            margin-bottom: 1.5rem;
+        }
+
+        .article-card-content {
+            padding: 0; /* No padding needed on the container */
+            font-family: "Inria Serif", serif;
+            font-weight: 700;
+        }
+
+        /* Styling for the date */
+        .article-card-content p {
+            color: #ccc; /* Lighter gray for the date */
+            margin: 0 0 0.8rem 0;
+            font-size: 1rem;
+        }
+
+        /* Styling for the article title link */
+        .article-card-content a {
+            color: #f0f0f0; /* An elegant off-white */
+            text-decoration: none; /* We remove the default underline... */
+            font-size: 1.25rem;
+            line-height: 1.5;
+        }
+
+        /* ...to add our own custom underline to the <u> tags! */
+        .article-card-content a u {
+            text-decoration: underline;
+            text-decoration-color: #f0f0f0; /* Underline matches the text color */
+            text-underline-offset: 4px; /* A little space between text and line */
+        }
+
+        /* Awesome hover effect! */
+        .article-card-content a:hover {
+            color: var(--accent-orange); /* Title turns orange */
+        }
+
+        .article-card-content a:hover u {
+            text-decoration-color: var(--accent-orange); /* Underline also turns orange */
+        }
+
+        /* =================== POLICE PAGE & IMAGE SLIDER STYLES (UPDATED) =================== */
+        .police-page-container {
+            /* Add your background image here */
+            background-image: url('image/police.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            padding: 4rem 0; /* Add overall padding */
+        }
+        .police-page-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(10, 10, 10, 0.8); /* Dark overlay for readability */
+            z-index: 1;
+        }
+        .police-page-container h1 {
+            font-family: "Poppins", sans-serif;
+            font-weight: 700;
+            font-style: bold;
+            text-align: center;
+            font-size: 3.5rem;
+            color: white;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 2;
+        }
+        .police-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+            padding: 0 7.5%; /* Horizontal padding */
+            position: relative;
+            z-index: 2;
+        }
+        .police-text-content h2, .police-text-content h3 {
+            font-weight: normal;
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            font-style: normal;
+        }
+        .police-text-content h2 {
+            font-size: 2.2rem;
+            color: #fff; /* Changed from orange to white for better contrast */
+            margin-bottom: 0.5rem;
+        }
+        .police-text-content p, .police-text-content li {
+            font-size: 1.21rem;
+            line-height: 1.6;
+            color:#fff;
+            font-family: "georgia", serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+        .police-text-content h3 {
+            font-size: 1.7rem;
+            color: #fff;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        .police-text-content ul {
+            list-style-type: '✓';
+            padding-left: 1.5rem;
+        }
+        .police-text-content li {
+            padding-left: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+        .image-slider-container {
+            position: relative;
+            width: 100%;
+            height: 450px;
+            overflow: hidden;
+            border-radius: 10px;
+            border: 2px solid #333;
+        }
+        .slider-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+        }
+        .slider-image.active {
+            opacity: 1;
+            transform: translateX(0);
+            z-index: 1;
+        }
+        .slider-image.exit {
+            transform: translateX(-100%);
+        }
+
+        /* =================== SMART CITY PAGE STYLES =================== */
+        .smart-city-container {
+            background-image: url(image/smartandsafe.png);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            padding: 2rem 0 2rem 0; /* Vertical padding */
+        }
+        .smart-city-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(51, 51, 51, 0.8); /* Light overlay */
+            z-index: 1;
+        }
+        .smart-city-container h1 {
+            font-family: "Poppins", sans-serif;
+            font-weight: 700;
+            font-style: bold;
+            text-align: center;
+            font-size: 3.5rem;
+            color: white; /* Dark text for light background */
+            margin-bottom: 4rem;
+            position: relative;
+            z-index: 2;
+        }
+        .smart-city-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr; /* Give more space to text */
+            gap: 3rem;
+            align-items: center;
+            padding: 0 7.5%;
+            position: relative;
+            z-index: 2;
+        }
+        .smart-city-text h2 {
+            font-size: 2.2rem;
+            color: white;
+            margin-bottom: 1rem;
+            font-family: "inter", sans-serif;
+            font-weight: 600;
+            font-style: normal;
+        }
+        .smart-city-text p {
+            color: white; /* Darker grey text */
+            line-height: 1.7;
+            margin-bottom: 2.5rem;
+            font-family: "georgia", serif;
+            font-weight: 400;
+            font-style: normal;
+            font-size: 1.21rem;
+        }
+        .smart-city-image img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        /* =================== TNCSC PAGE STYLES =================== */
+        .tncsc-container {
+            background-image: url('image/civil.png'); /* Ensure this image is in your project folder */
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            padding: 4rem 0 6rem 0; /* Adjusted vertical padding */
+            color: #fff; /* Default text color for the page */
+        }
+        .tncsc-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(51, 51, 51, 0.7); 
+            z-index: 1;
+        }
+        .tncsc-container h1 {
+            font-family: "poppins", sans-serif;
+            font-style: bold;
+            font-weight: 700;
+            text-align: center;
+            font-size: 3.5rem;
+            color: #fff;
+            margin-bottom: 3.5rem; /* Adjusted margin */
+            position: relative;
+            z-index: 2;
+            letter-spacing: 1px;
+        }
+
+        /* NEW: Wrapper for content to control width */
+        .tncsc-content-wrapper {
+            max-width: 1480px; /* Max width for the content as seen in screenshot */
+            margin: 0 auto; /* Center the content */
+            padding: 0 20px; /* Some padding on smaller screens */
+            position: relative;
+            z-index: 2;
+        }
+
+        .tncsc-grid {
+            display: grid;
+            grid-template-columns: 3fr 1fr; /* Default: Wide column on the left */
+            gap: 2rem;
+            align-items: start;
+        }
+
+        /* ADD THIS NEW RULE */
+        .tncsc-grid.tncsc-grid-reversed {
+            grid-template-columns: 1fr 3fr; /* Reversed: Narrow column on the left */
+        }
+
+        .tncsc-left-column, .tncsc-right-column {
+            display: flex; /* Use flexbox for internal alignment */
+            flex-direction: column;
+        }
+
+        .tncsc-left-column .description-text {
+            color: #e0e0e0; /* Lighter text color */
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            font-size: 1.21rem; /* Slightly smaller font for these descriptions */
+            font-family: "georgia", serif;
+            font-weight: 400;
+        }
+
+        .tncsc-gps-img {
+            width: 100%; /* Smaller width for GPS image */
+            align-self: flex-start; /* Align to the left */
+            margin-top: 1rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3); /* Add subtle shadow */
+        }
+
+        .tncsc-right-column .description-text {
+            color: #e0e0e0;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            font-size: 1.21rem;
+            font-family: "Georgia", serif;
+            font-weight: 400;
+        }
+
+        .tncsc-cctv-img {
+            width: 100%; /* Adjusted width for CCTV image */
+            align-self: flex-end; /* Align to the right */
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3); /* Add subtle shadow */
+        }
+        
+        .tncsc-right-column h2 {
+            font-size: 2.2rem; /* Adjusted font size */
+            color: white;
+            margin-top: 0;
+            margin-bottom: 1.5rem; /* Space below heading */
+            font-family: "inter", sans-serif;
+            font-weight: 600;
+            font-style: bold;
+        }
+
+        /* =================== TRANSPORT PAGE STYLES =================== */
+        .transport-container {
+            background-image: url('image/transport.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            padding: 4rem 2.5%; 
+            color: #fff;
+        }
+        .transport-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(10, 10, 10,0.65); /* Dark overlay */
+            z-index: 1;
+        }
+        .transport-container h1 {
+            text-align: center;
+            font-size: 3.5rem;
+            color: white;
+            margin-bottom: 3.5rem;
+            position: relative;
+            z-index: 2;
+            font-family: "Poppins", sans-serif;
+            font-weight: 700;
+        }
+        .transport-grid {
+            display: grid;
+            /* This is the line to change for more text space */
+            grid-template-columns: 2.5fr 1fr; 
+            gap: 3rem;
+            align-items: start;
+            position: relative;
+            z-index: 2;
+        }
+        .transport-text-content h2 {
+            font-family: "inter, sans-serif";
+            font-weight: 600;
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 1rem;
+            font-family: var(--sans-font);
+            font-weight: bold;
+        }
+        .transport-text-content p {
+            font-family: "georgia", serif;
+            font-weight: 400;
+            font-size: 1.18rem;
+            line-height: 1.7;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+        .transport-image-collage {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* The grid is two columns wide */
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+        }
+
+        .transport-image-collage img {
+            width: 100%;
+            /* EXPERIMENT with this height. Let's try a shorter height like 120px. */
+            height: 100%; 
+            object-fit: cover; /* Switched back to cover for a clean grid */
+        }
+
+        .transport-image-collage img:last-child {
+            grid-column: 1 / -1;
+            /* Also experiment with the bottom image's height. Let's try 160px. */
+            height: 110px;
+        }
+
+        /* =================== TANGEDCO PAGE STYLES =================== */
+        .tangedco-container {
+            /* IMPORTANT: Replace with your TANGEDCO background image */
+            background-image: url('image/tangedco.png'); 
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            padding: 4rem 2.5%;
+            color: #fff;
+        }
+        .tangedco-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(10, 20, 40, 0.65); /* Dark blue overlay */
+            z-index: 1;
+        }
+        .tangedco-container h1 {
+            font-family: "Poppins", sans-serif;
+            font-weight: 700;
+            text-align: center;
+            font-size: 3.5rem;
+            color: #fff;
+            margin-bottom: 3.5rem;
+            position: relative;
+            z-index: 2;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .tangedco-grid {
+            display: grid;
+            grid-template-columns: 2.8fr 1fr; /* Text column is slightly wider */
+            gap: 3rem;
+            align-items: center; /* Vertically center content in columns */
+            position: relative;
+            z-index: 2;
+        }
+        .tangedco-text-content h2 {
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            font-size: 2.2rem;
+            color: #fff; /* White heading like in the screenshot */
+            margin-bottom: 1rem;
+        }
+        .tangedco-text-content p {
+            font-family: "Georgia", serif;
+            font-weight: 400;
+            font-size: 1.21rem;
+            line-height: 1.7;
+            color: #e0e0e0;
+            margin-bottom: 1.5rem;
+        }
+        .tangedco-image-content img {
+            width: 100%;
+            background-color: #fff; /* Add white background for transparent PNGs */
+            padding: 8px; /* Small padding to emulate the screenshot's border */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* =================== MANUFACTURING PAGE STYLES =================== */
+        .manufacturing-container {
+            /* IMPORTANT: Replace with your manufacturing background image */
+            background-image: url('image/manufacturing.png'); 
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            padding: 4rem 2.5%;
+            color: #fff;
+        }
+        .manufacturing-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(10, 10, 10, 0.65); /* Dark overlay */
+            z-index: 1;
+        }
+        .manufacturing-container h1 {
+            font-family: "poppins", sans-serif;
+            font-weight: 700;
+            text-align: center;
+            font-size: 3.5rem;
+            color: #fff;
+            margin-bottom: 3.5rem;
+            position: relative;
+            z-index: 2;
+            letter-spacing: 1px;
+        }
+        .manufacturing-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr; /* Text column is wider */
+            gap: 3rem;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        .manufacturing-text-content h2 {
+            font-size: 1.8rem;
+            color: white;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-family: "inter", sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .manufacturing-text-content h2:first-of-type {
+            margin-top: 0;
+        }
+        .manufacturing-text-content p {
+            font-family: Georgia, serif;
+            font-weight: 400;
+            font-size: 1.18rem;
+            line-height: 1.7;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+        .manufacturing-image-content img {
+            width: 100%;
+            background-color: #fff;
+            padding: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* =================== TANGEDCO PAGE STYLES =================== */
+        .cooperative-container {
+            /* IMPORTANT: Replace with your TANGEDCO background image */
+            background-image: url('image/cooperative.png'); 
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            padding: 4rem 2.5%;
+            color: #fff;
+        }
+        .cooperative-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(10, 20, 40, 0.65); /* Dark blue overlay */
+            z-index: 1;
+        }
+        .cooperative-container h1 {
+            font-family: "Poppins", sans-serif;
+            font-weight: 700;
+            text-align: center;
+            font-size: 3.5rem;
+            color: #fff;
+            margin-bottom: 3.5rem;
+            position: relative;
+            z-index: 2;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .cooperative-grid {
+            display: grid;
+            grid-template-columns: 2.5fr 1fr; /* Text column is slightly wider */
+            gap: 3rem;
+            align-items: center; /* Vertically center content in columns */
+            position: relative;
+            z-index: 2;
+        }
+        .cooperative-text-content h2 {
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            font-size: 2.2rem;
+            color: #fff; /* White heading like in the screenshot */
+            margin-bottom: 1rem;
+        }
+        .cooperative-text-content p {
+            font-family: "Georgia", serif;
+            font-weight: 400;
+            font-size: 1.21rem;
+            line-height: 1.7;
+            color: #e0e0e0;
+            margin-bottom: 1.5rem;
+        }
+        .cooperative-image-content img {
+            width: 100%;
+            padding: 10px; /* Small padding to emulate the screenshot's border */
+        }
+
+        /* =================== EDUCATION PAGE STYLES =================== */
+        .education-container {
+            background-image: url('image/education.png'); /* <<< ADD A SUITABLE BACKGROUND IMAGE */
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            padding: 4rem 7.5%;
+            color: #fff;
+        }
+        .education-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 1;
+            background-color: rgba(10, 20, 40, 0.3);
+        }
+        .education-container h1 {
+            text-align: center;
+            font-size: 3.5rem;
+            color: #fff;
+            margin-bottom: 3.5rem;
+            position: relative;
+            z-index: 2;
+            font-family: "Poppins", sans-serif;
+            font-weight: 700;
+        }
+        .education-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+            align-items: start; /* <<< CHANGED: Aligns both columns to the top */
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .education-text-content h2 {
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            font-size: 2.2rem;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .education-text-content p {
+            font-family: "Georgia", serif;
+            font-weight: 400;
+            font-size: 1.19rem;   /* <<< CHANGED: Reduced from 1.05rem */
+            line-height: 1.7;    /* <<< CHANGED: Reduced from 1.8 for tighter spacing */
+            color: #e0e0e0;
+            margin-bottom: 1.5rem;
+        }
+
+        .education-image-content img {
+            width: 100%;
+            margin-top: 15%;
+            background-color: #fff;
+            padding: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+                /* =================== CROP MANAGEMENT PAGE STYLES =================== */
+        .crop-mgmt-container {
+            /* IMPORTANT: Replace with your crop background image */
+            background-image: url('image/crop.png'); 
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            padding: 4rem 7.5%;
+            color: #fff;
+        }
+        .crop-mgmt-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(10, 10, 10, 0.65); /* Dark overlay */
+            z-index: 1;
+        }
+        .crop-mgmt-container h1 {
+            text-align: center;
+            font-size: 3.5rem;
+            color: #fff;
+            margin-bottom: 3.5rem;
+            position: relative;
+            z-index: 2;
+            font-family: "Poppins", sans-serif;
+            font-weight: 700;
+        }
+        .crop-mgmt-grid {
+            display: grid;
+            grid-template-columns: 4fr 1fr; /* Text column is wider */
+            gap: 3rem;
+            align-items: center; /* Vertically aligns the text and image */
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .crop-mgmt-text-content h2 {
+            font-family: "Inter", sans-serif;
+            font-weight: 600;
+            font-size: 2.2rem;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+        .crop-mgmt-text-content p {
+            font-family: "Georgia", serif;
+            font-weight: 400;
+            font-size: 1.21rem;
+            line-height: 1.7;
+            color: #e0e0e0;
+            margin-bottom: 1.5rem;
+        }
+        .crop-mgmt-image-content img {
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* =================== NEW SCROLL TO TOP BUTTON =================== */
+        .scroll-to-top-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--accent-orange);
+            color: #000;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+            line-height: 50px; /* Aligns icon vertically */
+            text-align: center; /* Aligns icon horizontally */
+            cursor: pointer;
+            z-index: 1001; /* Above footer and other content */
+            
+            /* Hidden by default */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+        }
+
+        .scroll-to-top-btn.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .scroll-to-top-btn:hover {
+            background-color: #ffb74d;
+        }
+
+        .contact-page-wrapper {
+            position: relative;
+            min-height: calc(100vh - 85px);
+            display: flex;
+            flex-direction: column; 
+            padding-bottom: 0; 
+            overflow: hidden;
+            background: #0d1222; /* Set the dark background on the wrapper */
+        }
+
+        /* NEW: Wrapper for the top section and bubbles */
+        .contact-section-top-wrapper {
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            /* This section is where the bubbles will be confined */
+        }
+
+        /* Bubbles Container: Positioned absolutely inside the TOP WRAPPER */
+        .bubbles-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Behind the content */
+        }
+
+        .bubbles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .bubbles li {
+            position: absolute;
+            list-style: none;
+            display: block;
+            width: 20px;
+            height: 20px;
+            background: #F97316; /* Faint orange */
+            box-shadow: 0 0 10px #ff6a00;
+            animation: animate-bubbles 25s linear infinite;
+            bottom: -150px; /* Start below the screen */
+            border-radius: 50%;
+        }
+
+        .bubbles li:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
+        .bubbles li:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
+        .bubbles li:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
+        .bubbles li:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
+        .bubbles li:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-delay: 0s; }
+        .bubbles li:nth-child(6) { left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
+        .bubbles li:nth-child(7) { left: 35%; width: 150px; height: 150px; animation-delay: 7s; }
+        .bubbles li:nth-child(8) { left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; }
+        .bubbles li:nth-child(9) { left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; }
+        .bubbles li:nth-child(10) { left: 85%; width: 150px; height: 150px; animation-delay: 0s; animation-duration: 11s; }
+
+        @keyframes animate-bubbles {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; }
+        }
+
+        .contact-main-title {
+            position: relative;
+            z-index: 10;
+            color: white;
+            font-size: 3.5rem;
+            text-align: center;
+            padding-top: 4rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+        }
+
+        .contact-section-top {
+            position: relative;
+            z-index: 10;
+            padding: 2rem 7.5% 6rem;
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .contact-form-container {
+            flex: 2;
+        }
+
+        .contact-form-container h2 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 2.2rem;
+            color: #fff;
+            margin-bottom: 2rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        .form-group label {
+            display: block;
+            color: #ccc;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background-color: #1a1a1a;
+            color: #fff;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control-custom:focus {
+            outline: none;
+            border-color: var(--accent-orange);
+        }
+
+        .form-textarea {
+            resize: none;
+            height: 150px;
+        }
+
+        .contact-submit-btn {
+            background-color: var(--accent-orange);
+            color: #000;
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 1rem;
+        }
+
+        .contact-submit-btn:hover {
+            background-color: #ffb74d;
+        }
+
+
+        /* Contact Details Box */
+        .contact-details-box {
+            flex: 1;
+            background-color: #1a1a1a;
+            color: #ccc;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            min-width: 300px;
+            height: fit-content;
+        }
+
+        .contact-details-box h3 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid var(--accent-orange);
+            display: inline-block;
+            padding-bottom: 0.2rem;
+        }
+
+        .detail-item {
+            display: flex;
+            margin-bottom: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .detail-item i {
+            color: var(--accent-orange);
+            font-size: 1.1rem;
+            margin-right: 1rem;
+            margin-top: 4px; /* Align icon better with text */
+            min-width: 20px;
+        }
+
+        .detail-item span {
+            font-size: 1rem;
+            line-height: 1.5;
+            font-family: 'Georgia', serif;
+        }
+
+        .contact-follow-us {
+            margin-top: 2rem;
+        }
+
+        .contact-follow-us .social-icons {
+            justify-content: flex-start;
+        }
+
+        /* Map Section */
+        .contact-section-bottom {
+            position: relative;
+            z-index: 10;
+            padding: 0 7.5% 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            background-color: #0d1222; /* Ensure the map section has the same dark background */
+        }
+
+        .contact-map-container {
+            height: 450px;
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .contact-map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* --- Floating Contact Button --- */
+        /* NEW: Wrapper for the button and close icon */
+        .floating-contact-wrapper {
+            position: fixed;
+            bottom: 15%;
+            right: 1%;
+            z-index: 1500;
+            
+            /* Apply the BOUNCE animation to the wrapper so the entire unit moves */
+            animation: bounce 2s infinite ease-in-out; 
+
+            /* Set initial state for slide-in (applies to the whole wrapper) */
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .floating-contact-wrapper.initial-slide-in {
+            /* Apply the slide-in animation when this class is present */
+            animation: slide-in-bottom 0.5s forwards, bounce 2s 0.5s infinite ease-in-out; 
+        }
+
+        .floating-contact-btn {
+            /* Style remains the same, but remove bounce animation from here */
+            background-color: var(--accent-orange);
+            color: #000;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            cursor: pointer;
+            display: block;
+            margin-top: 15px; /* Space below the close button */
+            
+            /* IMPORTANT: Remove 'animation: bounce...' from here */
+            opacity: 1; /* Ensure it's fully visible inside the wrapper */
+            transform: none; /* Reset transform so wrapper controls movement */
+        }
+
+        .floating-contact-btn:hover {
+            transform: scale(1.05);
+            background-color: #ffb74d; /* Lighter orange on hover */
+        }
+
+        /* NEW: Close Button Styles (Unchanged but inherits wrapper movement) */
+        .close-contact-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            background: #000;
+            color: #fff;
+            border-radius: 50%;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: background 0.2s;
+        }
+
+        .close-contact-btn:hover {
+            background: #555;
+        }
+
+        /* ---------------------------------------------------- */
+        /* ANIMATIONS (Unchanged) */
+        /* ---------------------------------------------------- */
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        @keyframes slide-in-bottom {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive adjustments for Contact Page */
+        @media (max-width: 992px) {
+            .contact-section-top {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            .form-row {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            .contact-details-box {
+                min-width: unset;
+            }
+            .contact-map-container {
+                height: 350px;
+            }
+            
+        }
+        .rocket{
+            width: 50px;
+        }
+
+        /* --- Footer Styles --- */
+        .footer {
+            background-color: #000;
+            color: #d1d1d1;
+            padding: 3rem 6.5%;
+            font-family: var(--sans-font);
+        }
+
+        /* NEW: Styles for the top heading container */
+        .footer-heading-container {
+            text-align: center;
+            margin-bottom: 4rem; /* Space between headings and columns */
+        }
+
+        /* NEW: This is now the grid container for the columns */
+        .footer-grid {
+            display: grid;
+            /* Adjusted column sizes for a balanced look */
+            grid-template-columns: 1.5fr 1.5fr 1fr 1fr;
+            gap: 2.5rem;
+        }
+
+        .footer-column h4 {
+            font-family: "Marcellus", serif;
+            font-weight: 400;
+            font-style: normal;
+            color: #fff;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* --- Column 1: Logo & Social --- */
+        .footer-logo {
+            width: 280px;
+            height: auto;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-about p {
+            font-family: "Inria Serif", serif;
+            font-weight: 300;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            color: white;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-icon {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+        }
+        .social-icon:hover {
+            transform: scale(1.1);
+        }
+        .social-icon.facebook { background-color: #3b5998; }
+        .social-icon.twitter { background-color: #1da1f2; }
+        .social-icon.linkedin { background-color: #0077b5; }
+        .social-icon.youtube { background-color: #cd201f; }
+
+
+        /* --- Column 2: Contact --- */
+        .footer-script-heading {
+            font-family: "Nothing You Could Do", cursive;
+            font-size: 2.5rem;
+            color: #fff;
+            margin: 0 0 0.5rem 0;
+        }
+        .footer-script-subheading {
+            font-family: "Marcellus", serif;
+            font-weight: 400;
+            font-size: 2.2rem;
+            color: #e0e0e0;
+            margin-bottom: 0; /* No margin needed here anymore */
+        }
+
+        .contact-info {
+            font-family: "Inria Serif", serif;
+            font-weight: 300;
+            list-style: none;
+            padding: 0;
+            color: white;
+        }
+        .contact-info li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1.2rem;
+            line-height: 1.6;
+        }
+        .contact-info .icon {
+            color: var(--accent-orange);
+            font-size: 1.1rem;
+            margin-right: 1rem;
+            margin-top: 4px;
+        }
+
+        /* --- Columns 3 & 4: Links --- */
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+            font-family: "Inria Serif", serif;
+            font-weight: 300;
+        }
+        .footer-links li {
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+        }
+        .footer-links .link-icon {
+            color: var(--accent-orange);
+            font-size: 0.7rem;
+            margin-right: 0.8rem;
+            /* --- NEW: Add transition for the icon --- */
+            transition: all 0.3s ease-in-out;
+        }
+        .footer-links a {
+            text-decoration: none;
+            color: white;
+            transition: color 0.3s ease;
+        }
+        .footer-links a:hover {
+            color: var(--accent-orange);
+        }
+
+        /* --- NEW: Change diamond to circle on hover --- */
+        .footer-links li:hover .link-icon::before {
+            content: "\f111"; /* This is the Font Awesome unicode for 'fa-circle' */
+            /* We must re-declare these to ensure the icon renders */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900; 
+            color: white;
+            transition: all 0.4s ease-in-out;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 992px) {
+            .header-logo { 
+                justify-content: flex-start; /* Ensure logo aligns to the left */
+                flex-grow: 1; /* Allow it to take up space to push the icon right */
+            }
+            .values-grid, .articles-grid { grid-template-columns: 1fr; }
+            .solutions-grid, .stats-grid, .transformation-buttons { grid-template-columns: repeat(2, 1fr); }
+            .transformation-content, .about-content, .join-us-content { flex-direction: column; }
+            .header { 
+                flex-direction: row; /* Keep logo and icon on one row */
+                justify-content: space-between; /* Space out logo and icon */
+                padding: 1rem 7.5%; /* Adjust vertical padding */
+            }
+            
+            /* IMPORTANT: Toggle button is now visible */
+            .menu-toggle-btn {
+                display: block;
+            }
+            /* IMPORTANT: Navigation is hidden by default and stacks vertically when shown */
+            .header-nav {
+                position: absolute;
+                top: 100%; /* Below the header row */
+                left: 0;
+                right: 0;
+                background-color: rgba(0, 0, 0, 0.95);
+                border-top: 1px solid #333;
+                /* Initially hidden via .mobile-hidden class in React */
+            }
+            
+            .header-nav ul {
+                flex-direction: column; /* Stack links vertically */
+                gap: 0; /* Remove gap */
+                padding: 1rem 0;
+            }
+            
+            .header-nav ul li {
+                width: 100%;
+                text-align: center;
+                border-bottom: 1px solid #111; /* Add separator */
+            }
+            
+            .header-nav ul li:last-child {
+                border-bottom: none;
+            }
+
+            .header-nav a {
+                padding: 1rem; /* Make links bigger and clickable */
+                display: block;
+            }
+            
+            .header-nav .dropdown-container {
+                width: 100%;
+            }
+
+            .header-nav .dropdown-menu {
+                position: static; /* Make dropdown flow naturally */
+                width: 100%; /* Take full width */
+                background-color: rgba(15, 15, 15, 0.95);
+                border: none;
+                border-radius: 0;
+                padding: 0;
+            }
+
+            .header-nav .dropdown-menu li a {
+                padding-left: 2rem; /* Indent dropdown items */
+            }
+            .page-content { padding-top: 5rem; }
+            .hero-content h1 { font-size: 3.5rem; }
+            .about-page-main-title { font-size: 2.5rem; }
+            .about-page-container p, .about-page-container li { font-size: 1.1rem; }
+            .footer { grid-template-columns: 1fr 1fr; }
+            .hero-foreground-img { display: none; }
+            #hero { justify-content: center; text-align: center; }
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            /* --- NEW RULES FOR #join-us --- */
+            #join-us {
+                grid-template-columns: 1fr; /* Switch to a single column */
+            }
+
+            /* Optional: Adjust text padding for mobile if needed */
+            .join-us-text-container {
+                padding: 3rem; /* Slightly reduce padding on smaller screens */
+                /* Ensure comma doesn't overlap text too much */
+                overflow: visible; /* Let comma overflow slightly if needed, or adjust its size/position */
+            }
+             /* Optional: Adjust comma size on mobile */
+            .join-us-text-container::before {
+                 width: 250px;
+                 height: 250px;
+                 right: -15px; /* Adjust position */
+            }
+            /* --- NEW: Fix narrow padding on mobile pages --- */
+            .smart-card-page-container,
+            .vr-ar-page-container,
+            .enterprise-page-container,
+            .marketing-page-container,
+            .web-mobile-app-container,
+            .education-container,
+            .crop-mgmt-container,
+            .about-page-wrapper,
+            .police-content-grid,
+            .smart-city-grid {
+                padding-left: 1.5rem;  /* Give it some breathing room */
+                padding-right: 1.5rem; /* But not the excessive 7.5% */
+            }
+            /* --- NEW: Responsive Stacking for Project Detail Pages --- */
+            
+            /* 1. Set all project grids to 1 column */
+            .police-content-grid,
+            .smart-city-grid,
+            .tncsc-grid,
+            .transport-grid,
+            .tangedco-grid,
+            .manufacturing-grid,
+            .cooperative-grid,
+            .education-grid,
+            .crop-mgmt-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* 2. Order: Image first (order: 1) */
+            .police-image-content,
+            .smart-city-image,
+            .tncsc-grid:not(.tncsc-grid-reversed) .tncsc-right-column,
+            .transport-image-collage,
+            .tangedco-image-content,
+            .manufacturing-image-content,
+            .cooperative-image-content,
+            .education-image-content,
+            .crop-mgmt-image-content {
+                order: 1;
+            }
+
+            /* 3. Order: Text second (order: 2) */
+            .police-text-content,
+            .smart-city-text,
+            .tncsc-grid:not(.tncsc-grid-reversed) .tncsc-left-column,
+            .transport-text-content,
+            .tangedco-text-content,
+            .manufacturing-text-content,
+            .cooperative-text-content,
+            .education-text-content,
+            .crop-mgmt-text-content {
+                order: 2;
+            }
+
+            /* 4. Fix for reversed TNCSC grid (which is already in the right order) */
+            .tncsc-grid.tncsc-grid-reversed .tncsc-left-column,
+            .tncsc-grid.tncsc-grid-reversed .tncsc-right-column {
+                order: unset; /* Resets the order to default */
+            }
+            /* --- NEW: Responsive layout for TNCSC GPS section --- */
+            .tncsc-grid.tncsc-grid-reversed {
+                /* 1. Remove the grid layout on mobile */
+                display: block;
+            }
+            .tncsc-grid.tncsc-grid-reversed .tncsc-left-column {
+                /* 2. Style the image container to be a flex row */
+                display: flex;
+                align-items: center;
+                gap: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+            .tncsc-grid.tncsc-grid-reversed .tncsc-gps-img {
+                /* 3. Make the image small, like the screenshot */
+                width: 100%;
+                height: auto;
+                margin-top: 0; /* Reset margin */
+            }
+            .tncsc-grid.tncsc-grid-reversed .tncsc-right-column h2 {
+                /* 5. Move the H2 up into the image row */
+                margin: 0;
+                /* This is a CSS trick: we move the h2 from the right column
+                   into the left column's flex layout using 'order' */
+                order: 2;
+            }
+            .tncsc-grid.tncsc-grid-reversed .tncsc-gps-img {
+                /* 6. Make the image appear first in that row */
+                order: 1;
+            }
+            /* --- NEW: Responsive Stacking for Enterprise Solutions Page --- */
+            .enterprise-images {
+                flex-direction: column; /* Stack images vertically */
+                align-items: center;    /* Center them */
+            }
+            /* --- NEW: Responsive Stacking for Web/Mobile App Page --- */
+            .web-mobile-images {
+                flex-direction: column; /* Stack images vertically */
+                align-items: center;    /* Center them */
+            }
+        }
+        @media (max-width: 576px) {
+            /* Optional: Smaller size for the icon */
+            .header-logo img {
+                height: 40px; 
+            }
+            .solutions-grid, .stats-grid, .footer { grid-template-columns: 1fr; }
+            .hero-content h1 { font-size: 2.5rem; }
+            .cert-badges { flex-direction: column; }
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-heading-container,
+            .footer-column.footer-about {
+                text-align: center;
+            }
+
+            .social-icons {
+                justify-content: center;
+            }
+
+            .footer-column.footer-contact,
+            .footer-column.footer-links {
+                text-align: left;
+            }
+        }

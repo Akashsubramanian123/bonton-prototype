@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BonTon Softwares Pvt Ltd. | Win In Style</title>
+    <link rel="icon" href="image/icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Content:wght@400;700&family=Inria+Serif:wght@300;400;700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Marcellus&family=Nothing+You+Could+Do&family=Noto+Serif+Georgian:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/georgia" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+
+        // 1. Header Component (UPDATED for Hiding Hamburger on Search)
+        const Header = ({ navigateTo, currentPage, currentKey }) => {
+            const [showSearch, setShowSearch] = React.useState(false);
+            const [searchQuery, setSearchQuery] = React.useState('');
+            const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+            
+            // NEW STATE for live results dropdown
+            const [liveSearchResults, setLiveSearchResults] = React.useState([]); 
+
+            const [showSolutionsDropdown, setShowSolutionsDropdown] = React.useState(false);
+            const [showProjectsDropdown, setShowProjectsDropdown] = React.useState(false);
+
+            const handleSearchIconClick = () => {
+                setShowSearch(true);
+                setIsMenuOpen(false);
+                setLiveSearchResults([]);
+            };
+            
+            const handleMenuToggle = () => {
+                setIsMenuOpen(prev => !prev);
+                setShowSolutionsDropdown(false);
+                setShowProjectsDropdown(false);
+                setShowSearch(false);
+            };
+
+            const handleDropdownParentClick = (page, dropdownName) => {
+                if (dropdownName === 'solutions') {
+                    if (window.innerWidth <= 992 || page === 'solutions-overview') {
+                        setShowSolutionsDropdown(prev => !prev);
+                    }
+                    setShowProjectsDropdown(false);
+                } else if (dropdownName === 'projects') {
+                    if (window.innerWidth <= 992 || page === 'projects-overview') {
+                        setShowProjectsDropdown(prev => !prev);
+                    }
+                    setShowSolutionsDropdown(false);
+                }
+
+                navigateTo(page);
+
+                if (window.innerWidth <= 992) {
+                    setIsMenuOpen(true);
+                }
+            };
+            
+            const handleFullSearch = (e) => {
+                e.preventDefault();
+                if (searchQuery.trim()) {
+                    navigateTo('search', searchQuery);
+                    setSearchQuery('');
+                    setShowSearch(false);
+                    setLiveSearchResults([]);
+                }
+            };
+            
+            const handleLiveSearch = (e) => {
+                const query = e.target.value;
+                setSearchQuery(query);
+                
+                const lowerCaseQuery = query.toLowerCase().trim();
+
+                if (lowerCaseQuery.length === 0) {
+                    setLiveSearchResults([]);
+                    return; // Exit early if query is empty
+                }
+
+                let results = [];
+
+                // Special case: "solution" or "solutions"
+                if (lowerCaseQuery === 'solution' || lowerCaseQuery === 'solutions') {
+                    results = searchableData.filter(item => item.type === 'Solution');
+                } 
+                // Special case: "project" or "projects"
+                else if (lowerCaseQuery === 'project' || lowerCaseQuery === 'projects') {
+                    // We check for both 'Project' and 'Projectx' to include all project items
+                    results = searchableData.filter(item => item.type === 'Project' || item.type === 'Project');
+                } 
+                // Standard search: query length > 1
+                else if (lowerCaseQuery.length > 1) {
+                    results = searchableData.filter(item => 
+                        item.title.toLowerCase().includes(lowerCaseQuery) ||
+                        item.description.toLowerCase().includes(lowerCaseQuery)
+                    ).slice(0, 5); // Limit standard search results to 5
+                }
+                // Else (e.g., single character that isn't a special case), results remains []
+
+                setLiveSearchResults(results);
+            }
+            
+            const handleCloseSearch = () => {
+                setShowSearch(false);
+                setSearchQuery('');
+                setLiveSearchResults([]);
+            };
+            
+            const handleNavigation = (page, key) => {
+                navigateTo(page, key);
+                setIsMenuOpen(false); 
+                setShowSearch(false); 
+                setShowSolutionsDropdown(false); 
+                setShowProjectsDropdown(false);
+                setLiveSearchResults([]);
+                setSearchQuery('');
+            };
+
+            let navClassName = "header-nav";
+            if (window.innerWidth <= 992) {
+                navClassName += isMenuOpen ? " mobile-open" : " mobile-hidden";
+            }
+            if (showSearch) {
+                navClassName = "header-nav mobile-hidden";
+            }
+
+            // NEW: Determine the class for the header based on search state
+            const headerClass = `header ${showSearch ? 'search-active' : ''}`;
+
+
+            return (
+                // MODIFIED: Use the new headerClass
+                <header className={headerClass}>
+                    <div className="header-logo">
+                        <img 
+                            src="image/logo.png" 
+                            alt="BonTon Softwares Pvt Ltd." 
+                            onClick={() => handleNavigation('home')} 
+                            className="d-none d-sm-block"
+                        />
+                        <img 
+                            src="image/icon.png" 
+                            alt="BonTon Softwares Icon" 
+                            onClick={() => handleNavigation('home')} 
+                            className="d-block d-sm-none"
+                        />
+                    </div>
+                    
+                    {/* The menu toggle button is now controlled by the new CSS rule */}
+                    <button className="menu-toggle-btn" onClick={handleMenuToggle}>
+                        <i className={`fas ${isMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
+                    </button>
+                    
+                    {!showSearch ? (
+                        <nav className={navClassName}>
+                            <ul>
+                                <li><a onClick={() => handleNavigation('home')} className={currentPage === 'home' ? 'active' : ''}>HOME</a></li>
+                                
+                                <li className="dropdown-container">
+                                    <a 
+                                        onClick={() => handleDropdownParentClick('solutions-overview', 'solutions')} 
+                                        className={`${currentPage.startsWith('solutions') ? 'active' : ''}`}
+                                    >SOLUTIONS ▾</a>
+                                    <ul className="dropdown-menu" style={window.innerWidth <= 992 && showSolutionsDropdown ? {display: 'block'} : {}}>
+                                        <li><a 
+                                            onClick={() => handleNavigation('solutions', 'smart-card-solutions')}
+                                            className={currentPage === 'solutions' && currentKey === 'smart-card-solutions' ? 'dropdown-active' : ''}
+                                        >SMART CARD SOLUTIONS</a></li>
+                                        <li><a 
+                                            onClick={() => handleNavigation('solutions', 'vr-ar')}
+                                            className={currentPage === 'solutions' && currentKey === 'vr-ar' ? 'dropdown-active' : ''}
+                                        >VR / AR</a></li>
+                                        <li><a 
+                                            onClick={() => handleNavigation('solutions', 'enterprise-solutions')}
+                                            className={currentPage === 'solutions' && currentKey === 'enterprise-solutions' ? 'dropdown-active' : ''}
+                                        >ENTERPRISE SOLUTIONS</a></li>
+                                        <li><a 
+                                            onClick={() => handleNavigation('solutions', 'marketing-solutions')}
+                                            className={currentPage === 'solutions' && currentKey === 'marketing-solutions' ? 'dropdown-active' : ''}
+                                        >MARKETING SOLUTIONS</a></li>
+                                        <li><a 
+                                            onClick={() => handleNavigation('solutions', 'web-mobile-app')}
+                                            className={currentPage === 'solutions' && currentKey === 'web-mobile-app' ? 'dropdown-active' : ''}
+                                        >WEB / MOBILE APP</a></li>
+                                    </ul>
+                                </li>
+                                
+                                <li className="dropdown-container">
+                                    <a 
+                                        onClick={() => handleDropdownParentClick('projects-overview', 'projects')} 
+                                        className={`${currentPage.startsWith('project') ? 'active' : ''}`}
+                                    >PROJECTS ▾</a>
+                                    <ul className="dropdown-menu" style={window.innerWidth <= 992 && showProjectsDropdown ? {display: 'block'} : {}}>
+                                        <li><a 
+                                            onClick={() => handleNavigation('project', 'police')}
+                                            className={currentPage === 'project' && currentKey === 'police' ? 'dropdown-active' : ''}
+                                        >POLICE</a></li>
+                                        <li><a 
+                                            onClick={() => handleNavigation('project', 'smart-city')}
+                                            className={currentPage === 'project' && currentKey === 'smart-city' ? 'dropdown-active' : ''}
+                                        >SMART CITY & SAFE CITY</a></li>
+                                        <li><a 
+                                            onClick={() => handleNavigation('project', 'tncsc')}
+                                            className={currentPage === 'project' && currentKey === 'tncsc' ? 'dropdown-active' : ''}
+                                        >TNCSC CCTV & GPS</a></li>
+                                        <li><a 
+                                            onClick={() => handleNavigation('project', 'transport')}
+                                            className={currentPage === 'project' && currentKey === 'transport' ? 'dropdown-active' : ''}
+                                        >TRANSPORT</a></li>
+                                        <li><a 
+                                            onClick={() => handleNavigation('project', 'tangedco')}
+                                            className={currentPage === 'project' && currentKey === 'tangedco' ? 'dropdown-active' : ''}
+                                        >TANGEDCO</a></li>
+                                        <li><a 
+                                            onClick={() => handleNavigation('project', 'manufacturing')}
+                                            className={currentPage === 'project' && currentKey === 'manufacturing' ? 'dropdown-active' : ''}
+                                        >MANUFACTURING</a></li>
+                                        <li><a 
+                                            onClick={() => handleNavigation('project', 'cooperative')}
+                                            className={currentPage === 'project' && currentKey === 'cooperative' ? 'dropdown-active' : ''}
+                                        >COOPERATIVE SOCIETY</a></li>
+                                        <li><a 
+                                            onClick={() => handleNavigation('project', 'education')}
+                                            className={currentPage === 'project' && currentKey === 'education' ? 'dropdown-active' : ''}
+                                        >EDUCATION</a></li>
+                                        <li><a 
+                                            onClick={() => handleNavigation('project', 'crop-management')}
+                                            className={currentPage === 'project' && currentKey === 'crop-management' ? 'dropdown-active' : ''}
+                                        >CROP MANAGEMENT SYSTEM</a></li>
+                                    </ul>
+                                </li>
+                                <li><a onClick={() => handleNavigation('about')} className={currentPage === 'about' ? 'active' : ''}>ABOUT</a></li>
+                                <li><a onClick={handleSearchIconClick} style={{ cursor: 'pointer' }}><i className="fas fa-search"></i></a></li>
+                            </ul>
+                        </nav>
+                    ) : (
+                        <form className="header-search-form" onSubmit={handleFullSearch}>
+                            <input
+                                type="text"
+                                placeholder="Search titles..."
+                                className="header-search-input"
+                                value={searchQuery}
+                                onChange={handleLiveSearch}
+                                autoFocus
+                            />
+                            <button type="submit" className="header-search-submit"><i className="fas fa-search"></i></button>
+                            <button type="button" className="header-search-close" onClick={handleCloseSearch}><i className="fas fa-times"></i></button>
+                            
+                            {searchQuery.trim().length > 1 && (
+                                <div className="search-dropdown">
+                                    {liveSearchResults.length > 0 ? (
+                                        liveSearchResults.map(item => (
+                                            <div 
+                                                key={item.key} 
+                                                className="dropdown-item" 
+                                                onClick={() => handleNavigation(item.navigateArgs[0], item.navigateArgs[1])}
+                                            >
+                                                <span className="dropdown-item-title">{item.title}</span>
+                                                <span className="dropdown-item-type">{item.type}</span>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="no-results-dropdown">
+                                            No results found. Press Enter for full search.
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </form>
+                    )}
+                </header>
+            );  
+        };
+
+        // =================== NEW: SEARCH RESULTS PAGE COMPONENT ===================
+        const SearchResultsPage = ({ searchResults, searchQuery, navigateTo }) => {
+            return (
+                <div className="search-results-wrapper">
+                    <div className="container">
+                        <h1>Search Results for: "<span>{searchQuery}</span>"</h1>
+                        
+                        {searchResults.length > 0 ? (
+                            <div className="search-results-list">
+                                {searchResults.map(item => (
+                                    <div key={item.key} className="search-result-item" onClick={() => navigateTo(item.navigateArgs[0], item.navigateArgs[1])}>
+                                        <div className="search-item-header">
+                                            <h3>{item.title}</h3>
+                                            <span className="search-item-type">{item.type}</span>
+                                        </div>
+                                        {/* Shows a snippet of the description */}
+                                        <p>{item.description.substring(0, 150)}...</p>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="search-no-results">No results found matching your query.</p>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        // 2. NEW Footer Component
+        const Footer = () => {
+            return (
+                <footer className="footer">
+                    {/* New container for the top headings */}
+                    <div className="footer-heading-container">
+                        <img src="image/mail.png" className="rocket"/>
+                        <h2 className="footer-script-heading">Join our team.</h2>
+                        <h3 className="footer-script-subheading">Realize your potential.</h3>
+                    </div>
+
+                    {/* New grid container for the four columns */}
+                    <div className="footer-grid">
+                        {/* Column 1: Logo & About */}
+                        <div className="footer-column footer-about">
+                            <img src="image/logo.png" alt="BonTon Softwares Logo" className="footer-logo" />
+                            <p>BonTon is all about uncompromising excellence. We believe in success through success. Winning our patron's win is our style of business.</p>
+                            <div className="social-icons">
+                                <a href="#" className="social-icon facebook"><i className="fab fa-facebook-f"></i></a>
+                                <a href="#" className="social-icon twitter"><i className="fab fa-twitter"></i></a>
+                                <a href="#" className="social-icon linkedin"><i className="fab fa-linkedin-in"></i></a>
+                                <a href="#" className="social-icon youtube"><i className="fab fa-youtube"></i></a>
+                            </div>
+                        </div>
+
+                        {/* Column 2: Contact Info */}
+                        <div className="footer-column footer-contact">
+                            <h4>Address</h4>
+                            <ul className="contact-info">
+                                <li>
+                                    <i className="fas fa-location-dot icon"></i>
+                                    <span>Plot no: 143, 1st floor IIFL Towers MGR salai Perungudi, Chennai - 600096</span>
+                                </li>
+                                <li>
+                                    <i className="fas fa-envelope icon"></i>
+                                    <span>info@bontonsoftwares.com</span>
+                                </li>
+                                <li>
+                                    <i className="fas fa-phone icon"></i>
+                                    <span>044 24612769</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Column 3: Solutions */}
+                        <div className="footer-column footer-links">
+                            <h4>Solutions</h4>
+                            <ul>
+                                <li><i className="fas fa-diamond link-icon"></i><a href="#solutions/smart-card-solutions">Smart Card Solutions</a></li>
+                                <li><i className="fas fa-diamond link-icon"></i><a href="#solutions/vr-ar">VR / AR</a></li>
+                                <li><i className="fas fa-diamond link-icon"></i><a href="#solutions/enterprise-solutions">Enterprise Solutions</a></li>
+                                <li><i className="fas fa-diamond link-icon"></i><a href="#solutions/marketing-solutions">Marketing Solutions</a></li>
+                                <li><i className="fas fa-diamond link-icon"></i><a href="#solutions/web-mobile-app">Web / Mobile App</a></li>
+                            </ul>
+                        </div>
+
+                        {/* Column 4: Quick Links */}
+                        <div className="footer-column footer-links">
+                            <h4>Quick Links</h4>
+                            <ul>
+                                <li><i className="fas fa-diamond link-icon"></i><a href="#hero">Home</a></li>
+                                <li><i className="fas fa-diamond link-icon"></i><a href="#about">About Us</a></li>
+                                <li><i className="fas fa-diamond link-icon"></i><a href="#solutions-overview">Solutions</a></li>
+                                <li><i className="fas fa-diamond link-icon"></i><a href="#products">Products</a></li>
+                                <li><i className="fas fa-diamond link-icon"></i><a href="#projects-overview">Projects</a></li>
+                                <li><i className="fas fa-diamond link-icon"></i><a href="#contact">Contact Us</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </footer>
+            );
+        };
+
+        // NEW ContactPage Component (UPDATED FOR FORM SUBMISSION)
+        const ContactPage = () => {
+            // Hardcoded map embed URL for IIFL Towers, Perungudi, Chennai
+            const mapEmbedUrl = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3887.6493922615417!2d80.24430267597116!3d12.99349698731172!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525d8866160163%3A0x6b44788c60a9203a!2sIIFL%20Towers!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin";
+            
+            // NEW: State to manage form fields
+            const [formData, setFormData] = React.useState({
+                fullName: '', email: '', subject: '', message: ''
+            });
+            const [status, setStatus] = React.useState(''); // 'success', 'error', 'sending', ''
+
+            const handleChange = (e) => {
+                const { id, value } = e.target;
+                setFormData(prev => ({ ...prev, [id]: value }));
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setStatus('sending');
+
+                try {
+                    const response = await fetch('http://localhost:3000/submit-form', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        // Send the form data directly
+                        body: JSON.stringify(formData), 
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    setStatus('success');
+                    // Clear the form on success
+                    setFormData({ fullName: '', email: '', subject: '', message: '' });
+
+                    console.log('Submission Success:', data);
+                    
+                } catch (error) {
+                    setStatus('error');
+                    console.error('Submission Error:', error);
+                }
+            };
+
+
+            return (
+                <div className="contact-page-wrapper">
+                    {/* NEW WRAPPER FOR TOP SECTION TO CONTAIN BUBBLES */}
+                    <div className="contact-section-top-wrapper">
+                        {/* Bubble Background Container (Now absolutely positioned inside the top wrapper) */}
+                        <div className="bubbles-container">
+                            <ul className="bubbles">
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                            </ul>
+                        </div>
+
+                        <h1 className="contact-main-title">Contact Us</h1>
+
+                        {/* Top Section: Form and Details */}
+                        <div className="contact-section-top">
+                            <div className="contact-form-container">
+                                <h2>Write Us</h2>
+                                {/* MODIFIED: Added onSubmit and disabled button when sending */}
+                                <form onSubmit={handleSubmit}>
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label htmlFor="fullName">Full Name</label>
+                                            <input type="text" className="form-control-custom" id="fullName" placeholder="Enter Full Name" required value={formData.fullName} onChange={handleChange} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="email">Email Address</label>
+                                            <input type="email" className="form-control-custom" id="email" placeholder="Enter Email Address" required value={formData.email} onChange={handleChange} />
+                                        </div>
+                                    </div>
+                                    <div className="form-group" style={{marginBottom: '1.5rem'}}>
+                                        <label htmlFor="subject">Subject</label>
+                                        <input type="text" className="form-control-custom" id="subject" placeholder="Enter Subject" required value={formData.subject} onChange={handleChange} />
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="message">Message</label>
+                                        <textarea className="form-control-custom form-textarea" id="message" placeholder="Enter Message" required value={formData.message} onChange={handleChange}></textarea>
+                                    </div>
+                                    <button type="submit" className="contact-submit-btn" disabled={status === 'sending'}>
+                                        {status === 'sending' ? 'Sending...' : 'Submit'}
+                                    </button>
+                                    {/* NEW: Status message display */}
+                                    {status === 'success' && <p style={{ color: 'green', marginTop: '10px' }}>✅ Message sent successfully!</p>}
+                                    {status === 'error' && <p style={{ color: 'red', marginTop: '10px' }}>❌ Failed to send message. Please try again.</p>}
+                                </form>
+                            </div>
+
+                            <div className="contact-details-box">
+                                <h3>Our contact details</h3>
+                                
+                                {/* ... (contact details unchanged) ... */}
+                                <div className="detail-item">
+                                    <i className="fas fa-location-dot"></i>
+                                    <span>Plot no: 143, 1st floor IIFL Towers MGR salai Perungudi, Chennai - 600096</span>
+                                </div>
+                                <div className="detail-item">
+                                    <i className="fas fa-phone"></i>
+                                    <span>044 24612769</span>
+                                </div>
+                                <div className="detail-item">
+                                    <i className="fas fa-envelope"></i>
+                                    <span>info@bontonsoftwares.com</span>
+                                </div>
+
+                                <div className="contact-follow-us">
+                                    <h3 style={{borderBottom: 'none'}}>Follow us:</h3>
+                                    <div className="social-icons">
+                                        <a href="#" className="social-icon facebook"><i className="fab fa-facebook-f"></i></a>
+                                        <a href="#" className="social-icon twitter"><i className="fab fa-twitter"></i></a>
+                                        <a href="#" className="social-icon linkedin"><i className="fab fa-linkedin-in"></i></a>
+                                        <a href="#" className="social-icon youtube"><i className="fab fa-youtube"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> {/* END contact-section-top-wrapper */}
+
+                    {/* Bottom Section: Map */}
+                    <div className="contact-section-bottom">
+                        <div className="contact-map-container">
+                            <iframe
+                                src={mapEmbedUrl}
+                                allowFullScreen=""
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                            ></iframe>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // 3. NEW Solutions Page Component
+        const SolutionsPage = ({ solution }) => {
+            // Render the custom layout for Smart Card Solutions
+            if (solution === 'smart-card-solutions') {
+                return (
+                    <div className="smart-card-page-container">
+                        <h1 className="main-title">Solutions</h1>
+                        <div className="smart-card-content-wrapper">
+                            <h2 className="smart-card-heading">Smart Card Based Driving Licence and Registration Certificate for Tamilnadu State Transport Authority</h2>
+                            
+                            <div className="animated-cards-container">
+                                {/* NOTE: You need to create these 3 image files */}
+                                <img src="image/licence1.png" alt="Driver License" className="animated-card card-1" />
+                                <img src="image/licence2.png" alt="Driver License Back" className="animated-card card-2" />
+                                <img src="image/licence3.png" alt="Smart Card" className="animated-card card-3" />
+                            </div>
+
+                            <div className="smart-card-details">
+                                <h2>Issuance of Smart Card Based Driving License and Registration Certificate in Tamil Nadu</h2>
+                                <ul>
+                                    <li>Issuing nearly 25,000 smart card every day across Tamil Nadu in 145.</li>
+                                    <li>Implemented the Project under BOOT Model & Project is Operational since 2018.</li>
+                                    <li>Built IT Infrastructure in all the R.T.O across Tamil nadu which includes Supply and Maintenance of Desktop Computers, Dye-Sublimations Printers, Laser Printers, UPS, Networking Switch, Partition, False Ceiling & Vinyl Flooring, Airconditioning etc.</li>
+                                    <li>Implementation of Asset & Ticket Management Software (To Maintain nearly 5000 Nos of IT & Non IT assets in all the 145 RTO Offices).</li>
+                                    <li>Implementation of Inventory Management Software (IMS) to track each and every Smart card based DL and RC issued.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            else if (solution === 'vr-ar') {
+                return (
+                    <div className="vr-ar-page-container">
+                        <h1 className="vr-ar-main-title">Solutions</h1>
+                        <div className="vr-ar-content-wrapper">
+                            <h2>VR/AR</h2>
+                            <div className="animated-cards-container">
+                                {/* NOTE: You need to create these 3 image files */}
+                                <img src="image/vr-ar1.png" alt="VR Experience 1" className="animated-card card-1" />
+                                <img src="image/vr-ar2.png" alt="VR Experience 2" className="animated-card card-2" />
+                                <img src="image/vr-ar3.png" alt="VR Experience 3" className="animated-card card-3" />
+                            </div>
+                            <div className="vr-ar-text-content">
+                                <p>Virtual Reality (VR) is a simulated experience that employs pose tracking and 3D near-eye displays to give the user an immersive feel of a virtual world. Applications of virtual reality include entertainment (particularly video games), education (such as medical or military training) and business (such as virtual meetings).</p>
+                                <h3>How it works?</h3>
+                                <p>The virtual tour can also be accessed through a virtual reality headset, allowing users to experience an immersive experience, as the user can control their physical movements in the VR environment through the controllers.</p>
+                                <h3>Why is it important?</h3>
+                                <p>Virtual Reality is essential for the growth and expansion of the metaverse industry. The technology supports the vision of metaverse clusters by aiding in creating the 3D virtual world. With VR, users can immerse themselves in interactive experiences that are hard to access in the physical environment.</p>
+                                <p>Experiencing things that have no existence through the computers is now possible with VR technology! Virtual Reality is a trending technology that gives excellent scope to diverse businesses to take a leap and simulate physical presence in the real world as well as the imaginary world. This immersive technology creates a computer-simulated environment, and the advancements offer cutting-edge solutions.</p>
+                                <p>Virtual Reality technology entered the new realms stepping beyond the current technology. Common people are now able to access and enjoy the benefits of VR technology. VR doesn't get restricted within the tech enthusiasts.</p>
+                                <p>Virtual Reality creates an artificial environment with software. The artificial environment gets presented to the audiences in a way which encourages them to accept and believe it as a real environment. VR technology creates primary experience focusing on two senses, i.e., vision and sound.</p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+            else if (solution === 'enterprise-solutions') {
+                return (
+                    <div className="enterprise-page-container">
+                        <h1 className="enterprise-main-title">Solutions</h1>
+                        <div className="enterprise-content-wrapper">
+                            <h2>Enterprise Solutions</h2>
+                            <div className="enterprise-images">
+                                <img src="image/enterprise1.png" alt="Enterprise Solutions Diagram 1"/>
+                                <div className="enterprise-image-box">
+                                    <img src="image/enterprise2.png" alt="Top part of diagram" className="img-top"/>
+                                    <img src="image/enterprise3.png" alt="Bottom left part" className="img-bottom"/>
+                                    <img src="image/enterprise4.png" alt="Bottom right part" className="img-bottom"/>
+                                </div>
+                            </div>
+                            <div className="enterprise-text-content">
+                                <p>An enterprise solution is a software application designed to meet the multifaceted needs of an organization rather than an individual end user or small business. Being large organizations with broad ranges of operations, enterprises often face unique challenges, such as interdepartmental communication and international commerce.</p>
+                                <h3>Enterprise Solution-Uses</h3>
+                                <p>One of the primary advantages of using an enterprise solution is that it can help track data throughout an organization. Broad access to data is important in numerous roles and for various purposes. Payroll, for example, involves visibility into salary records for all of an organization's employees. An enterprise solution makes sure that type of data is accessible to those who require it, helping to ensure a smooth-running operation.</p>
+                                <h3>Our Work in Enterprise Solutions</h3>
+                                <p>ERP-Enterprise resource planning, or ERP, refers to a solution that integrates multiple essential processes within an organization, namely those relating to accounting, inventory and supply chain management. With an ERP tool, an enterprise can maintain relevant data in a central database where leaders and other decision-makers can access it as required. The software also allows for the automation of repeatable workflows, thus improving operational efficiency.</p>
+                                <p>SCM-Supply chain management is the process and practice of overseeing all of the steps involved in creating a product and delivering it to the customer. The process includes devising product ideas, acquiring raw materials necessary for a product's creation, moving and storing these materials, receiving orders that initiate production, storing finished goods and transporting them to their destinations.</p>
+                                <p>HRMS-HR software is a digital solution for managing and optimizing the daily human resources tasks and overall HR goals of an organization. HR software makes it possible for HR staff and managers to better allocate their time and resources to more productive, profitable efforts.</p>
+                                <p>SmartCity (Video Surveillance)-Centralised Recording of the Video Footages in the District Managers Office. The Live Video Footages are transferred from cameras in the shop to the Network Video Recorder in the District Manager Office through Internet (IPv6). It is the first of its kind in India using IPV6 Network. Monitoring Centres at Regional Offices and Head Quarters of TASMAC.</p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+            else if (solution === 'marketing-solutions') {
+                return (
+                    <div className="marketing-page-container">
+                        <h1 className="marketing-main-title">Solutions</h1>
+                        <div className="marketing-content-wrapper">
+                            <h2>Digital Marketing Solutions</h2>
+                            <div className="animated-cards-container" style={{height: '220px', width: '350px'}}>
+                                <img src="image/marketing1.png" alt="Marketing 1" className="animated-card card-1" />
+                                <img src="image/marketing2.png" alt="Marketing 2" className="animated-card card-2" />
+                                <img src="image/marketing3.png" alt="Marketing 3" className="animated-card card-3" />
+                            </div>
+                            <div className="marketing-text-content">
+                                <p>Solutions marketing focuses its efforts on solutions for customer problems — not the products and services created by its company. Solutions marketing leverages many of the same practices as product marketing but takes the broader focus on business challenges and use cases.</p>
+                                <h3>Marketing Solutions-Uses</h3>
+                                <p>Advanced digital marketing solutions are focused on providing high quality solutions, service and satisfaction of customer. The main strategy behind all this stuff is ultimately to take your business to new heights. It helps in maximizing the revenues.</p>
+                                <h3>Why is it important?</h3>
+                                <p>Marketing Solutions provides a wide range of strategic, creative and production services, all designed to grow your business. Our service bundle can be integrated as a full-service growth program, or as separate services to meet your specific objectives and budgets.</p>
+                                <p>Advanced digital marketing solutions have brought a new revolution in the world of digital marketing. Digital marketing solutions provide help to newly opened start up in the initial stage and already setup business in order to make them profitable. It is a victorious situation for both the parties.</p>
+                                <p>Marketing Solutions provides a wide range of strategic, creative and production services, all designed to grow your business.</p>
+                                <p>Get cutting-edge insights into consumer behavior, brand perception, and innovation opportunities and make data-driven decisions to optimize marketing spend and personalize customer communication. This will help your company cultivate sustainable growth and outperform competitors.</p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+            else if (solution === 'web-mobile-app') {
+                 return (
+                    <div className="web-mobile-app-container">
+                        <h1 className="web-mobile-app-main-title">Solutions</h1>
+                        <div className="web-mobile-app-content-wrapper">
+                            <h2>Web / Mobile Applications</h2>
+                             <div className="web-mobile-images">
+                                <img src="image/web-app1.png" alt="Web App Interface 1" />
+                                <img src="image/web-app2.png" alt="Web App Interface 2" />
+                            </div>
+                            <div className="web-mobile-app-text-content">
+                                <p>Bonton's SMART KAVALAN APP - The field policing application was developed for use by Tamil Nadu police with an objective to leverage technology to manage the beat activities digitally and make patrolling and field policing more efficient. They can get reports on data recorded during beat and other field activities. Station records such as "bad character" check list, lookout database and important locations can be tagged and stored on the app. The app will be available in English and Tamil.</p>
+                                <h3>What is Web and Mobile app</h3>
+                                <p>Mobile websites are compatible across all devices and can be accessed by anyone through a web browser, while apps require downloading and special adaptations for each operating system – such as Android and iOS. Apps are not immediately accessible like a website until they are installed.</p>
+                                <h3>Why is it important?</h3>
+                                <p>A well-designed and useful app opens a world of opportunities because so much of our internet-based activity now occurs on the go. With customers utilizing their mobile devices whether on public transportation, when sitting in cafes, or simply walking down the street to stay connected.</p>
+                                <p>Websites have now become an essential tool for any business that wants to grow and succeed in this modern era. Being at the forefront of technology is no longer necessary while building a website. How we all communicate with one another and how data is transported, shared, and received have undergone an intriguing change during the past ten years.</p>
+                                <p>These software apps are designed to run on mobile devices like smartphone or tablet computer. These applications can be pre-installed on phones during manufacturing platforms, or delivered as web applications using server-side or client-side processing to provide an "application-like" experience within a web browser.</p>
+                                <p>Mobile development refers to the building of apps, but also the building of websites perfectly suited for small devices like tablets and mobile phones. Responsive design is what makes websites fit to mobile device screens flawlessly, meaning users aren’t slowed down by basic issues like formatting.</p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+            // A helper function to render the default layout for other solutions
+            else {
+                // This is a fallback for any solution that doesn't have a custom page yet.
+                return (
+                    <div className="solutions-page-wrapper">
+                        <div className="solutions-content">
+                            <h1>Solution Details</h1>
+                            <p>The content for this solution is not yet available. Please select another solution from the menu.</p>
+                        </div>
+                    </div>
+                );
+            }
+            
+        };
+
+        // =================== MODIFIED: PROJECT DETAIL PAGE COMPONENT ===================
+        const ProjectPage = ({ projectKey }) => {
+            // If the project is 'police', render the new custom layout
+            if (projectKey === 'police') {
+                const policeImages = ['image/article1.png', 'image/police2.png', 'image/police3.png'];
+                return (
+                    <div className="police-page-container">
+                        <h1>Police</h1>
+                        <div className="police-content-grid">
+                            <div className="police-text-content">
+                                <h2>SMART KAVALAR, FIELD POLICING APP</h2>
+                                <p>Tracking of Field Executives in real time by Higher officials for Reporting, Creation of Data bank and Geo-tagging to enable the location importance. API integration with external Databases like Vahan, Sarathi etc.</p>
+                                
+                                <h3>Main Functionalities are,</h3>
+                                <ul>
+                                    <li>Beat Creation / Allocation / Self assigned</li>
+                                    <li>Perform the Beat, Field Duties & General Tasks</li>
+                                    <li>Monitoring & Live Beat Tracking</li>
+                                    <li>Generating Customized Reports</li>
+                                    <li>SoS, Chat & Broadcast</li>
+                                </ul>
+                                
+                                <h3>Highlights of SMART KAVALAR</h3>
+                                <p>Holds 20,000 concurrent users and Total users experience above 75,000. Utilization of Google Map API above 3Lakh server request per day. Geo location tagging of prime localities like villages, ward, ATM, School, Temple, Govt offices and other important landmarks are covered. Report generation in varied customization styles is enabled. External plugins and API integration with flawless application flow is implemented. Supports both web and Mobile platforms with elegant User interfaces.</p>
+                            </div>
+                            <div className="police-image-content">
+                                <ImageSlider images={policeImages} />
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+            else if (projectKey === 'smart-city') {
+                 return (
+                    <div className="smart-city-container">
+                        <h1>Smart City and Safe City</h1>
+                        <div className="smart-city-grid">
+                            <div className="smart-city-text">
+                                <h2>Smart City and Safe City</h2>
+                                <p>BonTon Softwares Framework enables Cities to Build a City Level Digital Platform that can integrate City Data from various connected systems from across different departments and functions of the city and integrating all the information and actionable items onto a single City Operations Platform. Our platform provides rich visualisation, user friendly controls, graphical user interface and geospatial representation.</p>
+
+                                <h2>Smart City Initiative</h2>
+                                <p>Smart city initiative is a revolutionary project initiated by the Government of India to transform the country’s urban landscape. We had the opportunity to provide our services to the smart cities initiative in Coimbatore and Vellore through the mission directorate for the implementation of smart cities in the state of Tamil Nadu under TUFIDCO (Tamilnadu Urban Finance and Infrastructure Development Corporation Ltd).</p>
+                            </div>
+                            <div className="smart-city-image">
+                                <img src="image/smartcity.png" alt="Smart City Diagram" />
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            else if (projectKey === 'tncsc') {
+                return (
+                    <div className="tncsc-container">
+                        <h1>Civil Supply</h1>
+                        <div className="tncsc-content-wrapper">
+                            {/* Section 1: CCTV (Text Left, Image Right) */}
+                            <div className="tncsc-grid">
+                                <div className="tncsc-left-column">
+                                    <p className="description-text">An Internet Protocol camera, or IP camera, is a type of digital video camera that receives control data and sends image data via the Internet. They are commonly used for surveillance. Unlike analog closed-circuit television (CCTV) cameras, they require no local recording device, but only a local area network. Most IP cameras are webcams, but the term IP camera or neteam usually applies only to those used for surveillance that can be directly accessed over a network connection.</p>
+                                    <p className="description-text">"The main functions of Corporation are to procure essential commodities like rice, sugar, wheat, etc., storage and movement of such stocks for its distribution from the Taluk operational godowns to various public distribution system outlets through the Co-operative Societies and other agencies. The Corporation also under takes procurement of paddy, hulling and utilization of rice under decentralized procurement system."</p>
+                                </div>
+                                <div className="tncsc-right-column">
+                                    <img src="image/cctv.png" alt="CCTV Surveillance Cameras" className="tncsc-cctv-img"/>
+                                </div>
+                            </div>
+
+                            {/* A little space between the sections */}
+                            <div style={{ margin: '2rem 0' }}></div>
+
+                            {/* Section 2: GPS (Image Left, Text Right) - REVERSED LAYOUT */}
+                            {/* Section 2: GPS (Image Left, Text Right) - REVERSED LAYOUT */}
+                            <div className="tncsc-grid tncsc-grid-reversed">
+                                <div className="tncsc-left-column"> {/* This column is now narrow (1fr) */}
+                                    <img src="image/gps.png" alt="GPS Tracking on a smartphone" className="tncsc-gps-img"/>
+                                    <h2 className="d-lg-none">TNCSC GPS</h2>
+                                </div>
+                                <div className="tncsc-right-column"> {/* This column is now wide (3fr) */}
+                                    {/* --- REMOVED H2 FROM HERE --- */}
+                                    <h2 className="d-none d-lg-block">TNCSC GPS</h2>
+                                    <p className="description-text">VTS allows you to view your entire fleet in a single window real time. You can track your asset's movement live, set Geo-fencing for alerts, check for Over speed in case of fragile cargo movement, unscheduled overstays, fuel reports etc. It helps you in setting up customized dashboard for your entire fleet showing you the numbers you need- assets on active movement, idle assets, number of assets having planned movement for the day / week, amount of pilferage asset wise as per their movement etc.</p>
+                                    <p className="description-text">“BonTon is a leader in GPS and mobile Tracking system by enabling APP-to-APP and APP-TO-WEB Mobility solutions and platform to power the Internet of Things (IoT).”</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            else if (projectKey === 'transport') {
+                return (
+                    <div className="transport-container">
+                        <h1>Transport</h1>
+                        <div className="transport-grid">
+                            <div className="transport-text-content">
+                                <h2>SMART CARD BASED DRIVING LICENSE AND VEHICLE REGISTRATION DOCUMENT</h2>
+                                <p>State-of-the-art security features prevent counterfeiting and fraudulent use. Future-oriented card systems will mean greater mobility for most people, because they allow driving licenses to be read anywhere in the world using a simple machine-based process. Cardholders benefit from compact size and robustness of the card. With this system in place, travelers have the added convenience of holding a card with wide international acceptance. Issuing authorities benefit chiefly from the rapid, simple verification, international readability, durability and anti-forgery protection. The driving license also has tactile (raised) surfaces, tactile engraved text, changing colors as well as complex background designs. The smart cards come with a facility to record traffic violations and details of any convictions relating to road accidents. Unique ID number – provides quick access to Holders files. Smart card also prevents duplicates or fraudulent licenses. Manufacturing of Registration Certificates Card Personalization and Application Software Complete Integrated Solutions Manpower Deployment for Operations.</p>
+                                
+                                <h2>DRIVING LICENSE AND REGISTRATION MANAGEMENT SOLUTIONS</h2>
+                                <p>eDLVR is a web-based and modular solution designed to consolidate and simplify the various processes involved in vehicle registration and the issuance of driving licenses.</p>
+                                <p>The solution empowers traffic police departments with an intelligent enforcement mechanism that supports online registration and enrollment.</p>
+                                <p>The solution is additionally available with a mobile application that can be published under the government’s eService platform.</p>
+                            </div>
+                            <div className="transport-image-collage">
+                                <img src="image/transport1.png" alt="Transport logistics with trucks" />
+                                <img src="image/transport2.png" alt="Cargo plane and trucks" />
+                                <img src="image/transport3.png" alt="Crane loading a container ship" />
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            else if (projectKey === 'tangedco') {
+                return (
+                    <div className="tangedco-container">
+                        <h1>TANGEDCO</h1>
+                        <div className="tangedco-grid">
+                            <div className="tangedco-text-content">
+                                <h2>TANGEDCO:</h2>
+                                <p>Tamil Nadu Generation and Distribution Corporation Limited formed in the State of Tamil Nadu as a vertically integrated utility responsible for power generation and distribution. The electricity network has since been extended to all villages and towns throughout the State. The Tamil Nadu Generation & Distribution Corporation Ltd (TANGEDCO) requires million Tonnes of coal per annum (MTPA) for its Thermal Power Stations.</p>
+                                <p>The coal requirement is being met by indigenous coal and imported coal. The Indian Coal companies have executed Fuel Supply Agreement (FSA) with all the State Power Utilities. The indigenous coal is moved from various Coal fields to the load ports namely Haldia, Paradip and Vizag through Rail and then transported via ships to the discharge ports namely Ennore and Tuticorin ports. Our END-to-End application automates the entire coal shipping process management of TANGEDCO</p>
+                            </div>
+                            <div className="tangedco-image-content">
+                                {/* IMPORTANT: Replace with your actual dashboard image */}
+                                <img src="image/tangedco1.png" alt="TANGEDCO Dashboard UI" />
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            else if (projectKey === 'manufacturing') {
+                return (
+                    <div className="manufacturing-container">
+                        <h1>Manufacturing</h1>
+                        <div className="manufacturing-grid">
+                            <div className="manufacturing-text-content">
+                                <h2>TEMPERATURE CHECK AND FACIAL RECOGNITION</h2>
+                                <p>(......) is a 100% subsidiary of YMC and functions as the regional headquarters and corporate control body of India business operations for YMC. (......) is responsible for Corporate Planning & Strategy, Business Planning & Business Expansion and Quality & Compliance Assurance of Yamaha India Business.</p>
+
+                                <h2>Asset Monitoring Mobile App</h2>
+                                <p>Vehicles Pvt. Ltd. is a subsidiary of the German Truck AG. The company designs, manufactures, and sells commercial vehicles that cater to the demands of Indian customers. The production plant at Oragadam near Chennai, spreads over 400 acres was inaugurated on 18 April 2012. The plant hosts a full production facility including body shop, paint and assembly as well as all logistics needed.</p>
+                                
+                                <h2>Project Tracking Web App</h2>
+                                <p>Chennai Metropolitan Water Supply and Sewerage Board, known shortly as CMWSSB, is a statutory board of Government of Tamil Nadu which provides water supply and sewage treatment to the city of Chennai and areas around it. As of 2012, Chennai Metrowater supplies about 830 million litres of water every day to residents and commercial establishments</p>
+                            </div>
+                            <div className="manufacturing-image-content">
+                                {/* IMPORTANT: Replace with your actual progress tracker image */}
+                                <img src="image/manufacturing1.png" alt="Progress Tracker UI" />
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            else if (projectKey === 'cooperative') {
+                return (
+                    <div className="cooperative-container">
+                        <h1>Cooperative Society</h1>
+                        <div className="cooperative-grid">
+                            <div className="cooperative-text-content">
+                                <h2>COOPERATIVE SOCIETY:</h2>
+                                <p>In software development process, cooperation needs coordination processes to harmonize tasks among development team members. In turn, coordination needs corresponding communication mechanism to exchange information among the teammates. Therefore, cooperation should be achieved on the basis of coordination and communication. Cooperation is the manner of coordination that is necessary for agreeing on common goals and for the coordinated achievement of common work results among the participants</p>
+                                <p>Cooperatives are people-centred enterprises owned, controlled and run by and for their members to realise their common economic, social, and cultural needs and aspirations. Cooperatives bring people together in a democratic and equal way.</p>
+                            </div>
+                            <div className="cooperative-image-content">
+                                <img src="image/cooperative1.png" alt="Cooperative Society Smart Card" />
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            else if (projectKey === 'education') {
+                return (
+                    <div className="education-container">
+                        <h1>Education</h1>
+                        <div className="education-grid">
+                            <div className="education-text-content">
+                                <h2>Education</h2>
+                                <p>Now a day’s education plays a great role in development of any country. Many of education organizations try to increase education quality. One of the aspects of this improvement is managing of school resources. Education Management System carried on by any individual or institution engaged in providing a services to students, teachers, guardians and other persons are intermediary that performs one or more of the following functionalities – Student Admission, Employee Registration, Student List, Employee List, Student Attendance, Employee Attendance, Student Routine, Result Management, Payroll & Accounts. Education Management System (EMS) is such a service which provides all services for an educational institute to make your life easier and faster by assuring its performance. Easy User Management System, Easy Admission Process, Easy Attendance System. EMS is a system that will provide you a bird’s eye view of the functioning of the entire educational institution. It is a management information system helps to manage the different processes in an educational institution like General Administration, Staff Management, Academics, Student Management, and Accounts etc. The information is made using the latest technologies and help to make decision making a lot faster, effective and easier than ever before. Also helps to improve the overall quality of education of the institution. We use database and database technology are having a major impact on the growing use of computers. The implementation of the system was done using c# and SQL Server 2012 technologies, allowing system to be run in Windows OS. In a nutshell, Education Management Software managed your education institution by simplifying and automating processes and addressing the needs of all stakeholders helping them to be more efficient in their respective roles.</p>
+                                <p>Web based School Management Systems are designed to manage and store project information that are used in web-based applications. The project is titled "School Management System". This package once developed will help the school/institute to manage various details pertaining to its students. This will help accounts department in maintaining the details related to the fees & basic details like their security deposits, conveyance and etc, it will also help management or we can say administration department in maintaining student’s basic details as well as keeping a check on fees details. This package is basically developed for the authorities of the school/institute to make their task easier or we can say this package automate their tasks like maintaining students personal deals, marinating cash details, printing of receipts. This package helps the administrative & accounts department in maintaining the students personal & fees related details.</p>
+                            </div>
+                            <div className="education-image-content">
+                                {/* IMPORTANT: Replace with your actual education diagram image */}
+                                <img src="https://bontonsoftwares.com/assets/img/product/school_erp.png" alt="Education Management System Diagram" />
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            else if (projectKey === 'crop-management') {
+                return (
+                    <div className="crop-mgmt-container">
+                        <h1>Crop Management System</h1>
+                        <div className="crop-mgmt-grid">
+                            <div className="crop-mgmt-text-content">
+                                <h2>Crop Management System</h2>
+                                <p>Tamil Nadu Government wants to have a clear picture of the crop sown and the type of irrigation brought about across all farm lands in the state. The vision of the project is to be the means to create a single, verified source of truth for Farmer and Crop data in the state that can be utilized by multiple departments and other agents in the eco-system. This crop survey will ensure consistency in records across all databases. The goal is to ensure that all systems have access to accurate and up-to-date Farmer & Crop data in a timely manner.</p>
+                                <p>The overall crop survey application will have web and mobile components. The web components (including the API’s to be developed) shall be in the scope of TNeGA. The mobile application for data capture and geofenced validation shall be in the scope of vendors selected for outsourcing process.</p>
+                            </div>
+                            <div className="crop-mgmt-image-content">
+                                {/* IMPORTANT: Replace with your actual UI image */}
+                                <img src="image/crop1.png" alt="Crop Management App UI" />
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Data for all other projects remains here
+            const otherProjectDetails = {
+                'smart-city': { title: 'Smart City & Safe City Initiatives', img: 'image/solution3.png', content: 'Our Smart City solutions leverage Information and Communication Technology (ICT) to optimize city functions and foster economic growth. We focus on creating safer urban environments by integrating surveillance systems, intelligent traffic management, and emergency response platforms. The goal is to improve operational efficiency and enhance the quality of life for all citizens.' },
+                'tncsc': { title: 'TNCSC CCTV & GPS Solutions', img: 'image/about.png', content: 'For the Tamil Nadu Civil Supplies Corporation (TNCSC), we deploy comprehensive surveillance and tracking systems. This includes the installation of CCTV networks and GPS tracking on vehicles to ensure the security and integrity of the supply chain, prevent malpractice, and improve logistical oversight from warehouse to distribution point.' },
+                'transport': { title: 'Transport Sector Modernization', img: 'image/solution2.png', content: 'We are at the forefront of modernizing transport departments through technology. Our projects include the implementation of the Smart Card Driving License (DL) and Registration Certificate (RC), which store information electronically on a microprocessor chip. These initiatives reduce fraud, streamline verification processes, and pave the way for integrated transport management systems.' },
+                'tangedco': { title: 'Solutions for TANGEDCO', img: 'image/stats.png', content: 'We develop and implement robust IT solutions for the Tamil Nadu Generation and Distribution Corporation (TANGEDCO). Our projects focus on improving billing systems, customer service portals, energy auditing, and grid management to enhance operational efficiency, reduce losses, and provide better service to millions of consumers.' },
+                'manufacturing': { title: 'Enterprise Solutions for Manufacturing', img: 'image/transform.png', content: 'Our enterprise solutions help manufacturing industries streamline their entire value chain. We implement custom ERP and SCM systems that optimize production planning, inventory management, and supply chain logistics. By integrating technology, we help businesses increase productivity, reduce costs, and maintain a competitive edge.' },
+                'cooperative': { title: 'Digital Platforms for Cooperative Societies', img: 'image/article2.png', content: 'We empower Cooperative Societies with digital platforms designed to manage their operations efficiently. Our solutions automate member management, financial transactions, and record-keeping, ensuring transparency and accountability. These tools help societies provide faster and more reliable services to their members.' },
+                'education': { title: 'Technology in Education', img: 'image/future.png', content: 'In the education sector, we provide innovative technology solutions to enhance the learning and administrative experience. This includes developing student information systems, e-learning platforms, and digital tools for institutional management, thereby fostering a more interactive, efficient, and accessible educational environment.' },
+                'crop-management': { title: 'Crop Management Systems for Agriculture', img: 'image/growth.png', content: 'Our Crop Management Systems are designed to support the agricultural sector with technology. These platforms help farmers monitor crop health, manage irrigation, and track yield through data analytics and IoT devices. Our goal is to promote sustainable farming practices and improve agricultural productivity.' }
+            };
+
+            // For all other projects, render the default layout
+            const project = otherProjectDetails[projectKey] || { title: 'Project Not Found', content: 'Please select a project from the menu.', img: 'image/solution-bg.jpg' };
+            
+            return (
+                <div>
+                    <div className="project-hero" style={{ backgroundImage: `url(${project.img})` }}>
+                        <div className="project-hero-overlay">
+                            <h1>{project.title}</h1>
+                        </div>
+                    </div>
+                    <div className="project-content-wrapper">
+                        <p>{project.content}</p>
+                    </div>
+                </div>
+            );
+        };
+        
+        // =================== NEW: SOLUTIONS OVERVIEW PAGE COMPONENT ===================
+        const SolutionsOverviewPage = ({ navigateTo }) => {
+            return (
+                <div className="solutions-overview-page">
+                    <h1 className="solutions-overview-title">Solutions</h1>
+                    <div className="container">
+
+                        <div className="solutions-overview-section top-section">
+                            <div className="solutions-overview-text">
+                                <h2>All-in One Tech Solution</h2>
+                                <p>
+                                    BonTon Softwares is Transforming the E-governance solutions, Technology Consulting,
+                                    and IT infrastructure, Cloud Services. We have delivered many System integration Projects
+                                    and Supply Chain Management, Networking Solutions, Video Surveillance, Command
+                                    Control Centers, Smart Data Centers, Smart card solutions and 3G/4G Wireless
+                                    connectivity solutions.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="solutions-overview-section">
+                            <div className="solutions-overview-image">
+                                <img src="image/all-in-one.png" alt="Two hands shaking in a business deal" />
+                            </div>
+                            <div className="solutions-overview-text">
+                                <h2>Commitment</h2>
+                                <p>
+                                    Your success is a reflection of your decisions, attitude and
+                                    thinking. If your business isn't where you want it to be or
+                                    you're ready to set higher goals, start making new decisions.
+                                    To grow your business, you have to grow yourself.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="solutions-overview-section reverse">
+                             <div className="solutions-overview-image">
+                                <img src="image/all-in-one1.png" alt="Business team collaborating in a meeting" />
+                            </div>
+                            <div className="solutions-overview-text">
+                                <h2>Strategy</h2>
+                                <p>
+                                    The strategic plan gives us a place to record our mission,
+                                    vision, and values, as well as your long-term goals and the
+                                    action plans you'll use to reach them and we follow them.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="solutions-overview-section">
+                            <div className="solutions-overview-image">
+                                <img src="image/all-in-one2.png" alt="Developer working on a laptop with code on screen" />
+                            </div>
+                            <div className="solutions-overview-text">
+                                <h2>Deploy</h2>
+                                <p>
+                                    We have multiple ways to deploy a new version of an
+                                    application and it really depends on the needs and budget.
+                                    When releasing to development/staging environments, a
+                                    recreate or ramped deployment is usually a good choice.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        // =================== NEW: PROJECTS OVERVIEW PAGE COMPONENT ===================
+        const ProjectsOverviewPage = ({ navigateTo }) => { // <-- MODIFIED: Added navigateTo prop
+             const projects = [
+                // MODIFIED: Added a 'key' property to each project for navigation
+                { title: 'Police', key: 'police', description: 'Advanced systems for law enforcement, including the Smart Kavalar app for public safety.', img: 'image/article1.png' },
+                { title: 'Smart & Safe City', key: 'smart-city', description: 'Integrated technology to improve urban operational efficiency and citizen services.', img: 'image/smartandsafe.png' },
+                { title: 'TNCSC CCTV & GPS', key: 'tncsc', description: 'Comprehensive surveillance and tracking solutions for civil supplies corporations.', img: 'image/cctv.png' },
+                { title: 'Transport', key: 'transport', description: 'Modernization of transport departments with Smart Card DL/RC and safety applications.', img: 'image/transport2.png' },
+                { title: 'TANGEDCO', key: 'tangedco', description: 'Solutions for the Tamil Nadu Generation and Distribution Corporation to enhance efficiency.', img: 'image/tangedco1.png' },
+                { title: 'Manufacturing', key: 'manufacturing', description: 'Enterprise solutions to streamline production, supply chain, and operations.', img: 'image/manufacturing1.png' },
+                { title: 'Cooperative Society', key: 'cooperative', description: 'Digital platforms to manage operations and services for cooperative societies.', img: 'image/cooperative1.png' },
+                { title: 'Education', key: 'education', description: 'Innovative tech solutions to enhance learning experiences and institutional management.', img: 'image/education.png' },
+                { title: 'Crop Management', key: 'crop-management', description: 'Systems to aid farmers in monitoring and managing crop cycles for better yield.', img: 'image/crop1.png' },
+            ];
+            
+            return (
+                <div className="overview-page-wrapper">
+                    <h1>Our <span>Projects</span></h1>
+                    <div className="overview-grid">
+                        {projects.map(project => (
+                            // MODIFIED: Added onClick to the card to navigate
+                            <div className="overview-card" key={project.title} onClick={() => navigateTo('project', project.key)}>
+                                <img src={project.img} alt={project.title} />
+                                <div className="overview-card-content">
+                                    <h3>{project.title}</h3>
+                                    {/* NEW: Added the "View Project" link */}
+                                    <a className="overview-card-link" onClick={() => navigateTo('project', project.key)}>
+                                        View Project &rarr;
+                                    </a>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        // 4. "About Us" Page Component (MODIFIED)
+        const AboutPage = () => {
+            const [activeTab, setActiveTab] = React.useState('experience');
+
+            const renderContent = () => {
+                switch (activeTab) {
+                    case 'whyUs':
+                        return (
+                            <div>
+                                <p>That precisely is the reason we groom a special research team within our firm in search for better solutions ever. Started by engineers turned entrepreneurs to change the fate of IT services industry today, we offer a world-class service driven solely by our patron's success, which is your success. Yes, we do not serve clients. We win patrons.</p>
+                                <ul className="about-page-points">
+                                    <li>First with the latest technology solutions</li>
+                                    <li>Guarantor of best business results</li>
+                                    <li>Top-of-the-class in Performance and Talent</li>
+                                    <li>First with the latest technology solutions</li>
+                                </ul>
+                            </div>
+                        );
+                    case 'approach':
+                        return (
+                            <div>
+                                <p>Our service does not start and end with contracts. Our service starts with shouldering our patron's business by fulfilling their informational needs and our success is defined by their achievement of targets. We are not satisfied with mere customer satisfaction; we win our business by delivering excellent solutions and finest of services.</p>
+                                <ul className="about-page-points">
+                                    <li>Top-of-the-class in Performance and Talent</li>
+                                    <li>Guarantor of best business results</li>
+                                    <li>Guarantor of best business results</li>
+                                    <li>First with the latest technology solutions</li>
+                                </ul>
+                            </div>
+                        );
+                    case 'experience':
+                    default:
+                        return (
+                             <div>
+                                <p>BonTon is all about uncompromising excellence. We believe in success through success. Winning our patron's win is our style of business.</p>
+                                <ul className="about-page-points">
+                                    <li>Top-of-the-class in Performance and Talent</li>
+                                    <li>Most valued ally for all our partners and customers</li>
+                                    <li>First with the latest technology solutions</li>
+                                    <li>Guarantor of best business results</li>
+                                </ul>
+                            </div>
+                        );
+                }
+            };
+
+            return (
+                <React.Fragment>
+                    <div className="about-page-wrapper">
+                        <h2 className="about-page-main-title">About Us</h2>
+                        <div className="about-page-container">
+                            {/* Title removed from here */}
+                            <p>BonTon Softwares is committed to becoming one of India's fastest growing and most diversified business organizations, admired across peers, partners and customers for its people, partnerships and performance. It aims to be a superior investment for all the stakeholders, delivering innovative & sustainable solutions to help them achieve the best business results.</p>
+                            <div className="about-page-tabs">
+                                <h4 className={activeTab === 'experience' ? 'active' : ''} onClick={() => setActiveTab('experience')}>Our Experience</h4>
+                                <h4 className={activeTab === 'whyUs' ? 'active' : ''} onClick={() => setActiveTab('whyUs')}>Why Us?</h4>
+                                <h4 className={activeTab === 'approach' ? 'active' : ''} onClick={() => setActiveTab('approach')}>Our Approach</h4>
+                            </div>
+                            <div className="about-tab-content">
+                               {renderContent()}
+                            </div>
+                        </div>
+                    </div>
+                    <section id="solutions" style={{ background: '#000' }}>
+                        <div className="container">
+                            <h2>Future-Ready Solutions for <span>Real-World</span> Problems</h2>
+                            <div className="solutions-grid">
+                                <div className="solution-card">
+                                    <div className="solution-image-container">
+                                        <img src="image/solution1.png" alt="Police officers meeting" />
+                                        <h3>Smart Kavalar</h3>
+                                    </div>
+                                    <p>To seek police assistance instantly in emergency situations such as physical emergencies, eve teasing, kidnapping or natural disasters etc.</p>
+                                </div>
+                                <div className="solution-card">
+                                    <div className="solution-image-container">
+                                        <img src="image/solution2.png" alt="Digital Driver's License on a tablet" />
+                                        <h3>Smart DL/RC</h3>
+                                    </div>
+                                    <p>The Driving License and Registration Certificate is upgraded to Smart Card version. The DL/RC Certificate's information is stored electronically in a microprocessor chip.</p>
+                                </div>
+                                <div className="solution-card">
+                                    <div className="solution-image-container">
+                                        <img src="image/solution3.png" alt="Futuristic smart city skyline at night" />
+                                        <h3>Smart Cities</h3>
+                                    </div>
+                                    <p>A smart city uses ICT to improve operational efficiency. The main goal of a smart city is to optimize city functions and promote economic growth.</p>
+                                </div>
+                                <div className="solution-card">
+                                    <div className="solution-image-container">
+                                        <img src="image/solution4.png" alt="Orange safety cones on a road" />
+                                        <h3>Road Safety</h3>
+                                    </div>
+                                    <p>We deployed this app mainly to provide safety precaution to avoid accident.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </React.Fragment>
+            );
+        }
+
+        // =================== NEW: PRODUCTS PAGE COMPONENT ===================
+        const ProductsPage = () => {
+            return (
+                <div className="products-page-container">
+                    <div className="products-page-content">
+                        <div className="product-item">
+                            <h2>ML / AI</h2>
+                            <p>Machine Learning involves the use of Artificial Intelligence to enable machines to learn a task from experience without programming them specifically about that task. (In short, Machines learn automatically without human hand holding!!!) This process starts with feeding them good quality data and then training the machines by building various machine learning models using the data and different algorithm.</p>
+                        </div>
+                        <div className="product-item">
+                            <h2>Internet of Things (IOT)</h2>
+                            <p>IoT stands for Internet of Things. It refers to the interconnectedness of physical devices, such as appliances and vehicles, that are embedded with software, sensors, and connectivity which enables these objects to connect and exchange data. This technology allows for the collection and sharing of data from a vast network of devices, creating opportunities for more efficient and automated systems.</p>
+                        </div>
+                        <div className="product-item">
+                            <h2>Cloud Computing</h2>
+                            <p>Cloud computing is on-demand access, via the internet, to computing resources—applications, servers (physical servers and virtual servers), data storage, development tools, networking capabilities, and more—hosted at a remote data center managed by a cloud services provider (or CSP). The CSP makes these resources available for a monthly subscription fee or bills them according to usage.</p>
+                        </div>
+                        <div className="product-item">
+                            <h2>IT Outsourcing Services</h2>
+                            <p>Businesses today entirely rely on IT Infrastructure and Cloud solutions. In the past decade, outsourcing IT services to Managed Service Providers (MSP) has increased. Top companies take the leverage to focus on their core business by outsourcing IT services.</p>
+                        </div>
+                        <div className="product-animation-container">
+                            <div className="animated-card-product card-1">
+                                <img src="image/product1.png" alt="Website Scanning" />
+                                <div className="card-text">Website Scanning</div>
+                            </div>
+                            <div className="animated-card-product card-2">
+                                <img src="image/product2.png" alt="Malware Removal" />
+                                <div className="card-text">Malware Removal</div>
+                            </div>
+                            <div className="animated-card-product card-3">
+                                <img src="image/product3.png" alt="Cloud Security" />
+                                <div className="card-text">Cloud Security</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // 5. Home Page Component (UPDATED with Scroll Animation)
+        const HomePage = () => {
+            const [activeTab, setActiveTab] = React.useState('experience');
+
+            const renderAboutContent = () => {
+                // ... (your existing renderAboutContent function is unchanged)
+                switch (activeTab) {
+                    case 'whyUs':
+                        return (
+                            <div>
+                                <p>That precisely is the reason we groom a special research team within our firm in search for better solutions ever. Started by engineers turned entrepreneurs to change the fate of IT services industry today, we offer a world-class service driven solely by our patron's success, which is your success. Yes, we do not serve clients. We win patrons.</p>
+                                <ul className="about-points">
+                                    <li><i className="fas fa-check" style={{color: 'var(--accent-orange)', marginRight: '10px'}}></i>First with the latest technology solutions</li>
+                                    <li><i className="fas fa-check" style={{color: 'var(--accent-orange)', marginRight: '10px'}}></i>Guarantor of best business results</li>
+                                    <li><i className="fas fa-check" style={{color: 'var(--accent-orange)', marginRight: '10px'}}></i>Top-of-the-class in Performance and Talent</li>
+                                    <li><i className="fas fa-check" style={{color: 'var(--accent-orange)', marginRight: '10px'}}></i>First with the latest technology solutions</li>
+                                </ul>
+                            </div>
+                        );
+                    case 'approach':
+                        return (
+                            <div>
+                                <p>Our service does not start and end with contracts. Our service starts with shouldering our patron's business by fulfilling their informational needs and our success is defined by their achievement of targets. We are not satisfied with mere customer satisfaction; we win our business by delivering excellent solutions and finest of services.</p>
+                                <ul className="about-points">
+                                    <li><i className="fas fa-check" style={{color: 'var(--accent-orange)', marginRight: '10px'}}></i>Top-of-the-class in Performance and Talent</li>
+                                    <li><i className="fas fa-check" style={{color: 'var(--accent-orange)', marginRight: '10px'}}></i>Guarantor of best business results</li>
+                                    <li><i className="fas fa-check" style={{color: 'var(--accent-orange)', marginRight: '10px'}}></i>Guarantor of best business results</li>
+                                    <li><i className="fas fa-check" style={{color: 'var(--accent-orange)', marginRight: '10px'}}></i>First with the latest technology solutions</li>
+                                </ul>
+                            </div>
+                        );
+                    case 'experience':
+                    default:
+                        return (
+                            <div>
+                                <p>BonTon is all about uncompromising excellence. We believe in success through success. Winning our patron's win is our style of business.</p>
+                                <ul className="about-points">
+                                    <li><i className="fas fa-check" style={{color: 'var(--accent-orange)', marginRight: '10px'}}></i>Top-of-the-class in Performance and Talent</li>
+                                    <li><i className="fas fa-check" style={{color: 'var(--accent-orange)', marginRight: '10px'}}></i>Most valued ally for all our partners and customers</li>
+                                    <li><i className="fas fa-check" style={{color: 'var(--accent-orange)', marginRight: '10px'}}></i>First with the latest technology solutions</li>
+                                </ul>
+                            </div>
+                        );
+                }
+            };
+
+            return (
+                <main>
+                    <section id="hero">
+                        <div className="hero-overlay"></div>
+                        <div className="container hero-content">
+                            <h1>Where Innovation meets Excellence</h1>
+                        </div>
+                        <img src="image/Laptop-guy-Photoroom.png" alt="Abstract technology graphic" className="hero-foreground-img" />
+                    </section>
+                    <section id="certifications" className="p-0">
+                         <div className="container-fluid p-0">
+                                <div className="row g-0">
+                                    <div className="col-lg-6">
+                                        {/* --- MODIFIED: Added the ref={certImageRef} back --- */}
+                                        <div className="cert-image"></div>
+                                    </div>
+                                    <div className="col-lg-6 bg-primary text-white d-flex flex-column justify-content-center p-5">
+                                        <p className="fs-5" style={{fontFamily: "Poppins, sans-serif", fontWeight: 400, fontStyle: "normal"}}>
+                                            Bonton is all about uncompromising excellence. We believe our success lies in the success of our Patrons. Winning our Patrons win is our style of Business
+                                        </p>
+                                        <div className="d-flex justify-content-center align-items-center gap-4 cert-badges">
+                                            <img src="image/iso1.png" alt="ISO 9001 Certified" className="cert-badge-img" />
+                                            <img src="image/iso2.png" alt="ISO 20000 Certified" className="cert-badge-img" />
+                                            <img src="image/iso3.png" alt="ISO 27001 Certified" className="cert-badge-img" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </section>
+                    <section id="values">
+                        {/* ... values content ... */}
+                        <div className="container">
+                                <div className="values-grid">
+                                    <div className="value-card-layered">
+                                        <img src="image/consistency.png" alt="Consistency" />
+                                        <div className="value-content">
+                                            <h3>Consistency</h3>
+                                            <p>Delivering with unwavering consistency and resilient strength.</p>
+                                        </div>
+                                    </div>
+                                    <div className="value-card-layered">
+                                        <img src="image/growth.png" alt="Growth" />
+                                        <div className="value-content">
+                                            <h3>Growth</h3>
+                                            <p>Nurturing ideas into innovation, and innovation into growth.</p>
+                                        </div>
+                                    </div>
+                                    <div className="value-card-layered">
+                                        <img src="image/excellence.png" alt="Excellence" />
+                                        <div className="value-content">
+                                            <h3>Excellence</h3>
+                                            <p>Excellence isn't a goal, it's our standard.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </section>
+                    <section id="about">
+                        {/* ... about content ... */}
+                        <div className="container about-content">
+                            <div className="about-text">
+                                <h2>About us</h2>
+                                <p>BonTon Softwares is committed to becoming one of India's fastest growing and most diversified business organizations, admired across peers, partners and customers for its people, partnerships and performance.</p>
+                                <div className="about-tabs">
+                                    <h4 className={activeTab === 'experience' ? 'active' : ''} onClick={() => setActiveTab('experience')}>Our Experience</h4>
+                                    <h4 className={activeTab === 'whyUs' ? 'active' : ''} onClick={() => setActiveTab('whyUs')}>Why Us?</h4>
+                                    <h4 className={activeTab === 'approach' ? 'active' : ''} onClick={() => setActiveTab('approach')}>Our Approach</h4>
+                                </div>
+                                <div className="about-tab-content">
+                                    {renderAboutContent()}
+                                </div>
+                            </div>
+                            <div className="about-image">
+                                <img src="image/about.png" alt="Our Team" />
+                            </div>
+                        </div>
+                    </section>
+                    <section id="transformation">
+                        {/* ... transformation content ... */}
+                        <div className="container transformation-content">
+                                <div className="transformation-image">
+                                    <img src="image/transform.png" alt="AI Brain illustration" />
+                                </div>
+                                <div className="transformation-text">
+                                    <h2>Transforming business value chains through end-to-end services</h2>
+                                    <p>As organizations increasingly use technology to transform their business value chains, our end-to-end digital services and solutions help them accelerate results.</p>
+                                    <div className="transformation-buttons">
+                                        <div className="t-button">Build your future with Ideas</div>
+                                        <div className="t-button">Execute with agility and speed</div>
+                                        <div className="t-button">Operate with quality & efficiency</div>
+                                        <div className="t-button">Stay committed to your Decisions</div>
+                                    </div>
+                                </div>
+                            </div>
+                    </section>
+                    <section id="solutions">
+                        {/* ... solutions content ... */}
+                            <div className="container">
+                                <h2>Future-Ready Solutions for <span>Real-World</span> Problems</h2>
+                                <div className="solutions-grid">
+                                    <div className="solution-card">
+                                        <div className="solution-image-container">
+                                            <img src="image/solution1.png" alt="Police officers meeting" />
+                                            <h3>Smart Kavalar</h3>
+                                        </div>
+                                        <p>To seek police assistance instantly in emergency situations such as physical emergencies, eve teasing, kidnapping or natural disasters etc.</p>
+                                    </div>
+                                    <div className="solution-card">
+                                        <div className="solution-image-container">
+                                            <img src="image/solution2.png" alt="Digital Driver's License on a tablet" />
+                                            <h3>Smart DL/RC</h3>
+                                        </div>
+                                        <p>The Driving License and Registration Certificate is upgraded to Smart Card version. The DL/RC Certificate's information is stored electronically.</p>
+                                    </div>
+                                    <div className="solution-card">
+                                        <div className="solution-image-container">
+                                            <img src="image/solution3.png" alt="Futuristic smart city skyline at night" />
+                                            <h3>Smart Cities</h3>
+                                        </div>
+                                        <p>A smart city uses ICT to improve operational efficiency. The main goal is to optimize city functions and promote economic growth.</p>
+                                    </div>
+                                    <div className="solution-card">
+                                        <div className="solution-image-container">
+                                            <img src="image/solution4.png" alt="Orange safety cones on a road" />
+                                            <h3>Road Safety</h3>
+                                        </div>
+                                        <p>We deployed this app mainly to provide safety precaution to avoid accident.</p>
+                                    </div>
+                                </div>
+                            </div>
+                    </section>
+                   <section id="stats">
+                        <h2>We Have a Lot of Skills in System Integration</h2>
+                        
+                        <div className="container stats-content">
+                            <div className="stats-grid">
+                                <div className="stat-item">
+                                    <img src="image/expert.png"/>
+                                    <h3>400 +</h3>
+                                    <p>Technical Experts</p>
+                                </div>
+                                <div className="stat-item">
+                                    <img src="image/location.png"/>
+                                    <h3>145</h3>
+                                    <p>Available Locations</p>
+                                </div>
+                                <div className="stat-item">
+                                    <img src="image/experience.png"/>
+                                    <h3>15</h3>
+                                    <p>Years of Experience</p>
+                                </div>
+                                <div className="stat-item">
+                                    <img src="image/innovative.png"/>
+                                    <h3>100%</h3>
+                                    <p>Innovative Technology</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <section id="join-us">
+                        <div className="join-us-image">
+                            <img src="image/future.png" alt="A professional team collaborating in an office" />
+                        </div>
+                        <div className="join-us-text-container">
+                            <div className="join-us-text">
+                                <h2>Shape the Future With Us</h2>
+                                <p>We're solving complex challenges with smart, passionate people. Ready to take the next big step? Let's build the future together.</p>
+                                {/* MODIFIED: Link text changed to match the new design */}
+                                <a href="#contact" className="join-us-link">Join us {'>'} </a>
+                            </div>
+                        </div>
+                    </section>
+                    <section id="articles">
+                        <div className="container">
+                            <h2>Read the Latest Articles from Us</h2>
+                            <div className="articles-grid">
+                                <div className="article-card">
+                                    {/* IMPORTANT: Replace this src with your actual image file */}
+                                    <img src="image/article1.png" alt="Tamil Nadu police meeting" />
+                                    <div className="article-card-content">
+                                        <p>October 16, 2022</p>
+                                        <a href="https://www.thehindu.com/news/cities/chennai/tamil-nadu-police-to-roll-out-new-electronic-beat-system-using-smart-kavalar-app/article66107709.ece" target="_blank">
+                                           <u>Tamil Nadu police to roll out new electronic beat system using SmartKavalar app</u>   
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div className="article-card">
+                                    {/* Replace with your image */}
+                                    <img src="image/article2.png" alt="Smart Kavalar App presentation" />
+                                    <div className="article-card-content">
+                                        <p>Jan 03, 2023</p>
+                                        <a href="https://www.thehindu.com/news/cities/Madurai/app-based-investigation-helps-in-speedy-crime-detection-says-thoothukudi-sp/article66333664.ece" target="_blank">
+                                            <u>Smart Kavalar App helps in speedy crime detection; says Thoothukudi SP</u>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div className="article-card">
+                                    {/* Replace with your image */}
+                                    <img src="image/article3.png" alt="Smart Card for Transport Department" />
+                                    <div className="article-card-content">
+                                        <p>Feb 23, 2019</p>
+                                        <a href="https://www.thehindu.com/news/cities/Coimbatore/transport-dept-launches-smart-cards/article26348270.ece" target="_blank">
+                                           <u>Transport Department has launched the smart card facility with added security features</u>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            );
+        };
+
+        // =================== NEW: IMAGE SLIDER COMPONENT ===================
+        const ImageSlider = ({ images }) => {
+            const [currentIndex, setCurrentIndex] = React.useState(0);
+
+            React.useEffect(() => {
+                const interval = setInterval(() => {
+                    setCurrentIndex(prevIndex => (prevIndex + 1) % images.length);
+                }, 3000); // Change image every 3 seconds
+
+                return () => clearInterval(interval); // Cleanup interval on component unmount
+            }, [images.length]);
+
+            return (
+                <div className="image-slider-container">
+                    {images.map((image, index) => {
+                        let position = 'slider-image';
+                        if (index === currentIndex) {
+                            position += ' active';
+                        } else if (index === (currentIndex - 1 + images.length) % images.length) {
+                             position += ' exit';
+                        }
+                        return <img key={index} src={image} alt={`Slide ${index}`} className={position} />;
+                    })}
+                </div>
+            );
+        };
+
+        // =================== NEW: SCROLL TO TOP BUTTON COMPONENT ===================
+        const ScrollToTopButton = () => {
+            const [isVisible, setIsVisible] = React.useState(false);
+
+            // Function to show/hide button based on scroll position
+            const toggleVisibility = () => {
+                if (window.scrollY > 300) { // Show button after scrolling 300px
+                    setIsVisible(true);
+                } else {
+                    setIsVisible(false);
+                }
+            };
+
+            // Function to scroll to the top smoothly
+            const scrollToTop = () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            };
+
+            // Add scroll event listener when component mounts
+            React.useEffect(() => {
+                window.addEventListener('scroll', toggleVisibility);
+
+                // Clean up the event listener when component unmounts
+                return () => {
+                    window.removeEventListener('scroll', toggleVisibility);
+                };
+            }, []); // Empty array ensures this effect runs only once
+
+            return (
+                <button 
+                    className={`scroll-to-top-btn ${isVisible ? 'show' : ''}`} 
+                    onClick={scrollToTop}
+                    title="Go to top"
+                >
+                    <i className="fas fa-arrow-up"></i>
+                </button>
+            );
+        };
+
+        // =================== NEW: SEARCHABLE DATA (MOVED OUTSIDE) ===================
+        // This data is now a constant and won't be re-created on every render.
+        const searchableData = [
+            // Solutions
+            { type: 'Solution', key: 'smart-card-solutions', title: 'SMART CARD SOLUTIONS', description: 'Smart Card Based Driving Licence and Registration Certificate...', navigateArgs: ['solutions', 'smart-card-solutions'] },
+            { type: 'Solution', key: 'vr-ar', title: 'VR / AR', description: 'Virtual Reality (VR) is a simulated experience...', navigateArgs: ['solutions', 'vr-ar'] },
+            { type: 'Solution', key: 'enterprise-solutions', title: 'ENTERPRISE SOLUTIONS', description: 'An enterprise solution is a software application designed to meet the multifaceted needs...', navigateArgs: ['solutions', 'enterprise-solutions'] },
+            { type: 'Solution', key: 'marketing-solutions', title: 'Digital Marketing Solutions', description: 'Solutions marketing focuses its efforts on solutions for customer problems...', navigateArgs: ['solutions', 'marketing-solutions'] },
+            { type: 'Solution', key: 'web-mobile-app', title: 'Web / Mobile Applications', description: 'Bonton\'s SMART KAVALAN APP - The field policing application...', navigateArgs: ['solutions', 'web-mobile-app'] },
+            
+            // Projects
+            { type: 'Projectx', key: 'police', title: 'Police - SMART KAVALAR', description: 'Tracking of Field Executives in real time by Higher officials...', navigateArgs: ['project', 'police'] },
+            { type: 'Project', key: 'smart-city', title: 'Smart City and Safe City', description: 'BonTon Softwares Framework enables Cities to Build a City Level Digital Platform...', navigateArgs: ['project', 'smart-city'] },
+            { type: 'Project', key: 'tncsc', title: 'Civil Supply - TNCSC CCTV & GPS', description: 'An Internet Protocol camera, or IP camera, is a type of digital video camera...', navigateArgs: ['project', 'tncsc'] },
+            { type: 'Project', key: 'transport', title: 'Transport - Smart Card DL/RC', description: 'SMART CARD BASED DRIVING LICENSE AND VEHICLE REGISTRATION DOCUMENT...', navigateArgs: ['project', 'transport'] },
+            { type: 'Project', key: 'tangedco', title: 'TANGEDCO', description: 'Tamil Nadu Generation and Distribution Corporation Limited...', navigateArgs: ['project', 'tangedco'] },
+            { type: 'Project', key: 'manufacturing', title: 'Manufacturing', description: 'TEMPERATURE CHECK AND FACIAL RECOGNITION...', navigateArgs: ['project', 'manufacturing'] },
+            { type: 'Project', key: 'cooperative', title: 'Cooperative Society', description: 'In software development process, cooperation needs coordination processes...', navigateArgs: ['project', 'cooperative'] },
+            { type: 'Project', key: 'education', title: 'Education', description: 'Now a day’s education plays a great role in development...', navigateArgs: ['project', 'education'] },
+            { type: 'Project', key: 'crop-management', title: 'Crop Management System', description: 'Tamil Nadu Government wants to have a clear picture of the crop sown...', navigateArgs: ['project', 'crop-management'] },
+            { type: 'Products', key: 'product-key', title: 'Products', description: 'ML / AI Machine Learning involves the use of Artificial Intelligence to enable machines to learn a task from', navigateArgs: ['products', 'product-key'] },
+            { type: 'Contact', key: 'contact-key', title: 'Contact', description: 'Contact Us', navigateArgs: ['contact', 'contact-key'] },
+        ];
+        // --- End of Search Data ---
+
+
+        // 6. RESTRUCTURED Main App Component (Updated Search Logic)
+        const App = () => {
+            const [currentPage, setCurrentPage] = React.useState('home');
+            const [currentKey, setCurrentKey] = React.useState(null);
+            const [searchResults, setSearchResults] = React.useState([]);
+            const [searchQuery, setSearchQuery] = React.useState('');
+            const [hasInitialized, setHasInitialized] = React.useState(false);
+            const [initialDelayPassed, setInitialDelayPassed] = React.useState(false);
+
+            // This single effect handles all routing logic
+            React.useEffect(() => {
+                // Function to parse the URL hash and update the React state
+                const handleHashChange = () => {
+                    const hash = window.location.hash.substring(1); // Remove the '#'
+                    const [page, ...keyParts] = hash.split('/');
+                    const key = decodeURIComponent(keyParts.join('/')); // Decode the URL component
+
+                    // --- UPDATED Search Logic ---
+                    if (page === 'search' && key) {
+                        const query = key.toLowerCase().trim(); // Trim whitespace
+                        let results = []; // Initialize empty results array
+
+                        // Check for special keywords first
+                        // MODIFIED: Now checks for 'project' OR 'projects'
+                        if (query === 'project' || query === 'projects') {
+                            results = searchableData.filter(item => item.type === 'Project');
+                        } 
+                        // MODIFIED: Now checks for 'solution' OR 'solutions'
+                        else if (query === 'solution' || query === 'solutions') {
+                            results = searchableData.filter(item => item.type === 'Solution');
+                        } else if (query === 'products') {
+                            // NOTE: You need to add items with type: 'Product' to searchableData for this to work
+                            results = searchableData.filter(item => item.type === 'Product');
+                        } else {
+                            // If not a special keyword, search titles
+                            results = searchableData.filter(item =>
+                                item.title.toLowerCase().includes(query)
+                            );
+                        }
+
+                        setSearchResults(results); // Update the search results state
+                        setSearchQuery(key);     // Update the displayed search query
+                    } else {
+                        // Clear search results if we navigate away from the search page
+                         setSearchResults([]);
+                         setSearchQuery('');
+                    }
+                    // --- End of UPDATED Search Logic ---
+
+                    setCurrentPage(page || 'home'); // Default to 'home' if hash is empty
+                    setCurrentKey(key || null);
+                    window.scrollTo(0, 0);
+                };
+
+                // Listen for changes to the hash
+                window.addEventListener('hashchange', handleHashChange);
+
+                // Handle the initial page load
+                handleHashChange();
+
+                // Cleanup the event listener
+                return () => {
+                    window.removeEventListener('hashchange', handleHashChange);
+                };
+            }, []); // Effect runs once on mount
+
+            // Effect for the floating contact button delay
+            React.useEffect(() => {
+                const timer = setTimeout(() => {
+                    setInitialDelayPassed(true);
+                }, 3000); // 3 seconds delay
+                return () => clearTimeout(timer); // Cleanup on unmount
+            }, []);
+
+            // Effect to set hasInitialized based on initialDelayPassed
+             React.useEffect(() => {
+                if (initialDelayPassed) {
+                    setHasInitialized(true);
+                }
+            }, [initialDelayPassed]);
+
+
+            // Function to change the URL hash
+            const navigateTo = (page, key = null) => {
+                const newHash = key ? `${page}/${encodeURIComponent(key)}` : page;
+                window.location.hash = newHash;
+            };
+
+            // Function to decide which page component to render
+            const renderPage = () => {
+                switch (currentPage) {
+                    case 'home':
+                        return <HomePage navigateTo={navigateTo} />;
+                    case 'about':
+                        return <AboutPage />;
+                    case 'solutions':
+                        return <SolutionsPage solution={currentKey} />;
+                    case 'solutions-overview':
+                        return <SolutionsOverviewPage navigateTo={navigateTo} />;
+                    case 'products':
+                        return <ProductsPage />;
+                    case 'project':
+                        return <ProjectPage projectKey={currentKey} />;
+                    case 'projects-overview':
+                        return <ProjectsOverviewPage navigateTo={navigateTo} />;
+                    case 'search':
+                        // Pass the current search query and results to the search page
+                        return <SearchResultsPage searchResults={searchResults} searchQuery={searchQuery} navigateTo={navigateTo} />;
+                     case 'contact':
+                        return <ContactPage />;
+                    default:
+                        return <HomePage navigateTo={navigateTo} />; // Fallback to home page
+                }
+            };
+
+            // Function to dismiss the floating button
+            const handleCloseButton = (e) => {
+                e.stopPropagation(); // Prevent click on the main button
+                setHasInitialized(false); // Hide the button by setting this to false
+            };
+
+            // Determine if the floating button should be shown
+            const shouldShowFloatingButton = initialDelayPassed && hasInitialized && currentPage !== 'contact';
+
+            // Main component structure
+            return (
+                <React.Fragment>
+                    <Header navigateTo={navigateTo} currentPage={currentPage} currentKey={currentKey} searchableData={searchableData} />
+                    <div className="page-content">
+                        {renderPage()}
+                    </div>
+                    <Footer />
+                    {/* Render floating button conditionally */}
+                    {shouldShowFloatingButton && (
+                        <div className="floating-contact-wrapper initial-slide-in">
+                            <div className="close-contact-btn" onClick={handleCloseButton}>
+                                ×
+                            </div>
+                            <a
+                                onClick={() => navigateTo('contact')}
+                                className="floating-contact-btn"
+                            >
+                                Contact Us
+                            </a>
+                        </div>
+                    )}
+                    <ScrollToTopButton />
+                </React.Fragment>
+            );
+        };
+
+        // 7. Render the App to the DOM
+        ReactDOM.render(<App />, document.getElementById('root'));
+
+    </script>
+</body>
+</html>
